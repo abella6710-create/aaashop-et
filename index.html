@@ -220,6 +220,11 @@ function editProduct(i) {
 
 /* ===== DELETE ===== */
 function deleteProduct(i) {
+  if (!confirm("Delete this product?")) return;
+  products.splice(i, 1);
+  save();
+  render();
+}
   
 function toggleStock(i) {
   products[i].stock =
@@ -230,11 +235,7 @@ function toggleStock(i) {
   save();
   render();
 }
-  if (!confirm("Delete this product?")) return;
-  products.splice(i, 1);
-  save();
-  render();
-}
+
 
 /* ===== RENDER ===== */
 function render() {
