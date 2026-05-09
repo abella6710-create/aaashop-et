@@ -1,65 +1,263 @@
-<script>      image: e.target.result
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>AAA SHOP</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+/* ===== BASE ===== */
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #f4f6f8;
+}
+
+header {
+  background: linear-gradient(135deg, #1e88e5, #1565c0);
+  color: white;
+  text-align: center;
+  padding: 18px;
+}
+
+/* ===== LAYOUT ===== */
+.container {
+  padding: 15px;
+}
+
+/* ===== INPUTS ===== */
+input, button {
+  width: 100%;
+  padding: 12px;
+  margin: 6px 0;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 16px;
+}
+
+button {
+  border: none;
+  background: #1e88e5;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #1565c0;
+}
+
+/* ===== SCREENS ===== */
+.screen {
+  display: none;
+}
+
+/* ===== PRODUCT CARD ===== */
+.card {
+  background: white;
+  padding: 12px;
+  margin-bottom: 10px;
+  border-radius: 10px;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+}
+
+.card img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  border-radius: 10px;
+}
+
+.price {
+  color: #1e88e5;
+  font-weight: bold;
+}
+
+.admin-btns button {
+  width: 48%;
+  display: inline-block;
+}
+
+.admin-btns button.delete {
+  background: red;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <h1>AAA SHOP</h1>
+</header>
+
+<div class="container">
+
+<!-- ===== ROLE SCREEN ===== -->
+<div id="roleScreen" class="screen" style="display:block;">
+  <h3>Choose Mode</h3>
+  <button onclick="openCustomer()">🛒 Customer</button>
+  <button onclick="showAdminLogin()">🔐 Admin</button>
+</div>
+
+<!-- ===== ADMIN LOGIN ===== -->
+<div id="adminLogin" class="screen">
+  <h3>Admin Login</h3>
+  <input id="email" type="email" placeholder="Email">
+  <input id="code" type="password" placeholder="Admin code">
+  <button onclick="loginAdmin()">Login</button>
+  <button onclick="back()">Back</button>
+</div>
+
+<!-- ===== ADMIN PANEL ===== -->
+<div id="adminPanel" class="screen">
+  <h3>Admin Panel</h3>
+
+  <input id="name" placeholder="Product name">
+  <input id="price" type="number" placeholder="Price">
+  <input id="image" type="file">
+
+  <button onclick="addProduct()">Add Product</button>
+  <button onclick="logout()">Logout</button>
+</div>
+
+<!-- ===== SHOP ===== -->
+<div id="shop" class="screen">
+  <h3>Products</h3>
+  <div id="productList"></div>
+  <button onclick="logout()">Exit</button>
+</div>
+
+</div>
+
+<script>
+/* ===== DATA ===== */
+let products = JSON.parse(localStorage.getItem("products")) || [];
+
+const admins = ["admin123", "aaa2026", "shopowner"];
+let isAdmin = false;
+
+/* ===== NAVIGATION ===== */
+function show(screen) {
+  document.querySelectorAll(".screen").forEach(s => s.style.display = "none");
+  document.getElementById(screen).style.display = "block";
+}
+
+/* ===== ROLE ===== */
+function openCustomer() {
+  isAdmin = false;
+  show("shop");
+  render();
+}
+
+function showAdminLogin() {
+  show("adminLogin");
+}
+
+function back() {
+  show("roleScreen");
+}
+
+/* ===== ADMIN LOGIN ===== */
+function loginAdmin() {
+  let email = document.getElementById("email").value;
+  let code = document.getElementById("code").value;
+
+  if (admins.includes(code)) {
+    isAdmin = true;
+    show("adminPanel");
+    alert("Welcome " + email);
+  } else {
+    alert("Wrong admin code");
+  }
+}
+
+/* ===== ADD PRODUCT ===== */
+function addProduct() {
+  let name = document.getElementById("name").value;
+  let price = document.getElementById("price").value;
+  let file = document.getElementById("image").files[0];
+
+  if (!name || !price || !file) {
+    alert("Fill all fields");
+    return;
+  }
+
+  let reader = new FileReader();
+
+  reader.onload = function(e) {
+    products.push({
+      name,
+      price,
+      image: e.target.result
     });
 
-    localStorage.setItem("products", JSON.stringify(products));
+    save();
     render();
-    alert("Product added!");
   };
 
   reader.readAsDataURL(file);
 }
 
-// 🗑️ DELETE PRODUCT
-function deleteProduct(index) {
-  if (!confirm("Delete this product?")) return;
+/* ===== EDIT ===== */
+function editProduct(i) {
+  let p = products[i];
 
-  products.splice(index, 1);
-  localStorage.setItem("products", JSON.stringify(products));
-  render();
-}
-
-// ✏️ EDIT PRODUCT
-function editProduct(index) {
-  let p = products[index];
-
-  let newName = prompt("Edit name:", p.name);
-  let newPrice = prompt("Edit price:", p.price);
+  let newName = prompt("Edit name", p.name);
+  let newPrice = prompt("Edit price", p.price);
 
   if (newName && newPrice) {
-    products[index].name = newName;
-    products[index].price = newPrice;
-
-    localStorage.setItem("products", JSON.stringify(products));
+    products[i].name = newName;
+    products[i].price = newPrice;
+    save();
     render();
   }
 }
 
-// RENDER PRODUCTS
+/* ===== DELETE ===== */
+function deleteProduct(i) {
+  if (!confirm("Delete this product?")) return;
+  products.splice(i, 1);
+  save();
+  render();
+}
+
+/* ===== RENDER ===== */
 function render() {
-  let box = document.getElementById("products");
+  let box = document.getElementById("productList");
   box.innerHTML = "";
 
-  products.forEach((p, index) => {
-    box.innerHTML += 
+  products.forEach((p, i) => {
+    box.innerHTML += `
       <div class="card">
         <img src="${p.image}">
         <h3>${p.name}</h3>
         <p class="price">${p.price} Birr</p>
 
-        ${isAdmin ? 
-          <button onclick="editProduct(${index})">✏️ Edit</button>
-          <button onclick="deleteProduct(${index})" style="background:red;">🗑️ Delete</button>
-         : ""}
+        ${isAdmin ? `
+          <div class="admin-btns">
+            <button onclick="editProduct(${i})">Edit</button>
+            <button class="delete" onclick="deleteProduct(${i})">Delete</button>
+          </div>
+        ` : ""}
       </div>
-    ;
+    `;
   });
 }
 
-// LOGOUT
+/* ===== SAVE ===== */
+function save() {
+  localStorage.setItem("products", JSON.stringify(products));
+}
+
+/* ===== LOGOUT ===== */
 function logout() {
   location.reload();
 }
 
-// INIT
+/* ===== INIT ===== */
+show("roleScreen");
 render();
-          </script>
+</script>
+
+</body>
+</html>
