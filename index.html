@@ -190,10 +190,11 @@ function addProduct() {
 
   reader.onload = function(e) {
     products.push({
-      name,
-      price,
-      image: e.target.result
-    });
+  name,
+  price,
+  stock: "In Stock",
+  image: e.target.result
+});
 
     save();
     render();
@@ -225,6 +226,21 @@ function deleteProduct(i) {
   render();
 }
 
+function toggleStock(i) {
+  products[i].stock =
+    products[i].stock === "In Stock"
+      ? "Out of Stock"
+      : "In Stock";
+
+  save();
+  render();
+}
+  if (!confirm("Delete this product?")) return;
+  products.splice(i, 1);
+  save();
+  render();
+}
+
 /* ===== RENDER ===== */
 function render() {
   let box = document.getElementById("productList");
@@ -236,6 +252,13 @@ function render() {
         <img src="${p.image}">
         <h3>${p.name}</h3>
         <p class="price">${p.price} Birr</p>
+
+<p style="
+  color:${p.stock === 'In Stock' ? 'green' : 'red'};
+  font-weight:bold;
+">
+  ${p.stock}
+</p>
 
         ${isAdmin ? `
           <div class="admin-btns">
