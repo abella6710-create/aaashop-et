@@ -1,165 +1,130 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>AAA SHOP</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <style>
-    body {
-      font-family: Arial;
-      margin: 0;
-      background: #f4f6f8;
-    }
-
-    header {
-      background: #1e88e5;
-      color: white;
-      text-align: center;
-      padding: 20px;
-    }
-
-    h1 { margin: 0; }
-
-    .container {
-      padding: 15px;
-    }
-
-    /* Search bar */
-    input {
-      width: 100%;
-      padding: 12px;
-      margin-bottom: 10px;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-      font-size: 16px;
-    }
-
-    /* Filter buttons */
-    .filters {
-      display: flex;
-      gap: 8px;
-      margin-bottom: 15px;
-    }
-
-    .filters button {
-      flex: 1;
-      padding: 10px;
-      border: none;
-      border-radius: 8px;
-      background: #ddd;
-      cursor: pointer;
-    }
-
-    .filters button.active {
-      background: #1e88e5;
-      color: white;
-    }
-
-    /* Product cards */
-    .card {
-      background: white;
-      padding: 15px;
-      margin-bottom: 10px;
-      border-radius: 10px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    }
-
-    .price {
-      color: #1e88e5;
-      font-weight: bold;
-    }
-
-    .available { color: green; }
-    .out { color: red; }
-  </style>
-</head>
-
-<body>
-
-<header>
-  <h1>AAA SHOP</h1>
-  <p>Search & Filter Products</p>
-</header>
-
-<div class="container">
-
-  <!-- Search -->
-  <input type="text" id="search" placeholder="Search product..." onkeyup="filterProducts()">
-
-  <!-- Filters -->
-  <div class="filters">
-    <button onclick="setFilter('all')" class="active">All</button>
-    <button onclick="setFilter('available')">Available</button>
-    <button onclick="setFilter('out')">Out</button>
-  </div>
-
-  <!-- Products -->
-  <div id="products">
-
-    <div class="card" data-status="available">
-      <h3>Rice</h3>
-      <p class="price">100 Birr</p>
-      <p class="available">Available</p>
-    </div>
-
-    <div class="card" data-status="out">
-      <h3>Sugar</h3>
-      <p class="price">120 Birr</p>
-      <p class="out">Out of Stock</p>
-    </div>
-
-    <div class="card" data-status="available">
-      <h3>Oil</h3>
-      <p class="price">250 Birr</p>
-      <p class="available">Available</p>
-    </div>
-
-    <div class="card" data-status="available">
-      <h3>Bread</h3>
-      <p class="price">20 Birr</p>
-      <p class="available">Available</p>
-    </div>
-
-  </div>
-
-</div>
-
 <script>
-let currentFilter = "all";
+let products = JSON.parse(localStorage.getItem("products")) || [];
 
-function setFilter(filter) {
-  currentFilter = filter;
+const admins = ["admin123", "aaa2026", "shopowner"];
 
-  document.querySelectorAll(".filters button").forEach(btn => {
-    btn.classList.remove("active");
-  });
+let isAdmin = false;
 
-  event.target.classList.add("active");
+// PAGE SWITCH
+function show(section) {
+  document.getElementById("rolePage").style.display = "none";
+  document.getElementById("adminLogin").style.display = "none";
+  document.getElementById("adminPage").style.display = "none";
+  document.getElementById("shopPage").style.display = "none";
 
-  filterProducts();
+  document.getElementById(section).style.display = "block";
 }
 
-function filterProducts() {
-  let search = document.getElementById("search").value.toLowerCase();
-  let cards = document.querySelectorAll(".card");
+// CUSTOMER
+function openCustomer() {
+  show("shopPage");
+  render();
+}
 
-  cards.forEach(card => {
-    let name = card.querySelector("h3").innerText.toLowerCase();
-    let status = card.getAttribute("data-status");
+// ADMIN LOGIN PAGE
+function showAdminLogin() {
+  show("adminLogin");
+}
 
-    let matchSearch = name.includes(search);
-    let matchFilter =
-      currentFilter === "all" ||
-      currentFilter === status;
+// BACK
+function back() {
+  show("rolePage");
+}
 
-    if (matchSearch && matchFilter) {
-      card.style.display = "block";
-    } else {
-      card.style.display = "none";
-    }
+// LOGIN ADMIN
+function loginAdmin() {
+  let email = document.getElementById("adminEmail").value;
+  let code = document.getElementById("adminCode").value;
+
+  if (admins.includes(code)) {
+    isAdmin = true;
+    alert("Welcome Admin: " + email);
+    show("adminPage");
+    render();
+  } else {
+    alert("Wrong admin code!");
+  }
+}
+
+// ADD PRODUCT
+function addProduct() {
+  let name = document.getElementById("name").value;
+  let price = document.getElementById("price").value;
+  let file = document.getElementById("image").files[0];
+
+  if (!name  !price  !file) {
+    alert("Fill all fields");
+    return;
+  }
+
+  let reader = new FileReader();
+
+  reader.onload = function(e) {
+    products.push({
+      name,
+      price,
+      image: e.target.result
+    });
+
+    localStorage.setItem("products", JSON.stringify(products));
+    render();
+    alert("Product added!");
+  };
+
+  reader.readAsDataURL(file);
+}
+
+// 🗑️ DELETE PRODUCT
+function deleteProduct(index) {
+  if (!confirm("Delete this product?")) return;
+
+  products.splice(index, 1);
+  localStorage.setItem("products", JSON.stringify(products));
+  render();
+}
+
+// ✏️ EDIT PRODUCT
+function editProduct(index) {
+  let p = products[index];
+
+  let newName = prompt("Edit name:", p.name);
+  let newPrice = prompt("Edit price:", p.price);
+
+  if (newName && newPrice) {
+    products[index].name = newName;
+    products[index].price = newPrice;
+
+    localStorage.setItem("products", JSON.stringify(products));
+    render();
+  }
+}
+
+// RENDER PRODUCTS
+function render() {
+  let box = document.getElementById("products");
+  box.innerHTML = "";
+
+  products.forEach((p, index) => {
+    box.innerHTML += 
+      <div class="card">
+        <img src="${p.image}">
+        <h3>${p.name}</h3>
+        <p class="price">${p.price} Birr</p>
+
+        ${isAdmin ? 
+          <button onclick="editProduct(${index})">✏️ Edit</button>
+          <button onclick="deleteProduct(${index})" style="background:red;">🗑️ Delete</button>
+         : ""}
+      </div>
+    ;
   });
 }
-</script>
 
-</body>
-</html>
+// LOGOUT
+function logout() {
+  location.reload();
+}
+
+// INIT
+render();
+          </script>
