@@ -3,8 +3,8 @@
   "short_name": "AAA SHOP",
   "start_url": "index.html",
   "display": "standalone",
-  "theme_color": "#1e88e5",
   "background_color": "#ffffff",
+  "theme_color": "#1e88e5",
   "icons": [
     {
       "src": "logo.png",
