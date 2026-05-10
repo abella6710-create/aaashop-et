@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,7 +12,12 @@ header{background:#1e88e5;color:white;padding:15px;text-align:center;}
 .screen{display:none;padding:15px;}
 .active{display:block;}
 
-.card{background:white;padding:10px;margin:10px 0;border-radius:10px;}
+.card{
+  background:white;
+  padding:10px;
+  margin:10px 0;
+  border-radius:10px;
+}
 
 button{
   width:100%;
@@ -40,16 +45,14 @@ button{
   color:#1e88e5;
 }
 
-/* popup */
-#popup{
+#notify{
   position:fixed;
-  bottom:90px;
-  left:50%;
-  transform:translateX(-50%);
+  top:10px;
+  right:10px;
   background:#1e88e5;
   color:white;
   padding:10px;
-  border-radius:20px;
+  border-radius:10px;
   display:none;
 }
 </style>
@@ -57,21 +60,26 @@ button{
 
 <body>
 
-<header>AAA SHOP ETHIOPIA</header>
+<header>AAA SHOP</header>
+
+<div id="notify"></div>
 
 <!-- HOME -->
 <div id="home" class="screen active">
   <h2>Welcome 👋</h2>
-  <button onclick="openShop()">Start Shopping</button>
+
+  <input id="username" placeholder="Enter name">
+  <button onclick="loginUser()">Enter Shop</button>
+
   <button onclick="show('login')">Admin Login</button>
 </div>
 
-<!-- SHOP -->
+<!-- SHOP (TIKTOK STYLE) -->
 <div id="shop" class="screen">
-  <h2>Shop</h2>
+  <h2>Shop 🛍</h2>
   <div id="list"></div>
 
-  <h3>💬 Message Admin</h3>
+  <h3>💬 Chat Admin</h3>
   <div id="chatBox"></div>
   <input id="msg" placeholder="Message admin">
   <button onclick="sendMsg()">Send</button>
@@ -83,7 +91,7 @@ button{
   <div id="cartList"></div>
   <h3 id="total"></h3>
   <button onclick="clearCart()">Clear</button>
-  <button onclick="show('checkout')">Checkout</button>
+  <button onclick="checkout()">Checkout</button>
 </div>
 
 <!-- CHECKOUT -->
@@ -100,44 +108,39 @@ button{
     <p>1000*******</p>
   </div>
 
-  <button onclick="alert('Order sent ✔')">Confirm Order</button>
+  <button onclick="placeOrder()">Confirm Order</button>
 </div>
 
-<!-- LOGIN -->
+<!-- ADMIN -->
 <div id="login" class="screen">
   <h2>Admin Login</h2>
   <input id="pass" placeholder="Password">
   <button onclick="login()">Login</button>
 </div>
 
-<!-- ADMIN -->
 <div id="admin" class="screen">
   <h2>Admin Panel</h2>
 
   <input id="name" placeholder="Name">
   <input id="price" placeholder="Price">
-  <input id="cat" placeholder="Category">
   <input id="img" type="file">
 
   <button onclick="add()">Add Product</button>
 
-  <h3>Messages</h3>
+  <h3>📡 Online Users</h3>
+  <div id="usersBox"></div>
+
+  <h3>💬 Messages</h3>
   <div id="adminChat"></div>
 
-  <input id="reply" placeholder="Reply">
-  <button onclick="replyMsg()">Send Reply</button>
-
-  <h3>Products</h3>
-  <div id="adminList"></div>
+  <h3>📦 Orders</h3>
+  <div id="ordersBox"></div>
 </div>
-
-<!-- POPUP -->
-<div id="popup">Added to cart 🛒</div>
 
 <!-- NAV -->
 <div class="bottom-nav">
   <button onclick="show('home')">🏠</button>
-  <button onclick="openShop()">🛍</button>
+  <button onclick="show('shop')">🛍</button>
   <button onclick="show('cart')">🛒</button>
 </div>
 
@@ -147,54 +150,52 @@ button{
 let products = JSON.parse(localStorage.getItem("products")) || [];
 let cart = JSON.parse(localStorage.getItem("cart")) || [];
 let messages = JSON.parse(localStorage.getItem("messages")) || [];
+let orders = JSON.parse(localStorage.getItem("orders")) || [];
+let users = JSON.parse(localStorage.getItem("users")) || [];
 
-/* SCREEN */
+let currentUser = null;
+
+/* NAV */
 function show(id){
   document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
   document.getElementById(id).classList.add("active");
 
+  if(id==="shop") render();
   if(id==="cart") renderCart();
-  if(id==="shop") renderChat();
+  if(id==="admin") renderAdminAll();
 }
 
-/* SHOP */
-function openShop(){
+/* USER LOGIN */
+function loginUser(){
+  let name = document.getElementById("username").value;
+
+  currentUser = {
+    id:Date.now(),
+    name:name,
+    lastActive:Date.now()
+  };
+
+  users.push(currentUser);
+  localStorage.setItem("users",JSON.stringify(users));
+
   show("shop");
   render();
   renderChat();
 }
 
-/* PRODUCTS */
-function add(){
-  let name=document.getElementById("name").value;
-  let price=document.getElementById("price").value;
-  let cat=document.getElementById("cat").value;
-  let file=document.getElementById("img").files[0];
-
-  let reader=new FileReader();
-
-  reader.onload=function(e){
-    products.push({name,price,cat,img:e.target.result});
-    localStorage.setItem("products",JSON.stringify(products));
-    render();
-  };
-
-  reader.readAsDataURL(file);
-}
-
-/* RENDER SHOP */
+/* SHOP TIKTOK STYLE */
 function render(){
   let box=document.getElementById("list");
   box.innerHTML="";
 
   products.forEach((p,i)=>{
     box.innerHTML+=`
-      <div class="card">
-        <img src="${p.img}" width="100%">
-        <h3>${p.name}</h3>
-        <p>${p.price}</p>
+      <div class="card" style="text-align:center;">
+        <img src="${p.img}" style="width:100%;border-radius:10px;">
+        <h2>${p.name}</h2>
+        <p>${p.price} Birr</p>
 
-        <button onclick="addToCart(${i})">Add to Cart</button>
+        <button onclick="addToCart(${i})">🛒 Add</button>
       </div>
     `;
   });
@@ -211,7 +212,7 @@ function addToCart(i){
   }
 
   localStorage.setItem("cart",JSON.stringify(cart));
-  popup();
+  notify("Added to cart 🛒");
 }
 
 function renderCart(){
@@ -231,7 +232,6 @@ function renderCart(){
 
         <button onclick="addQty(${i})">+</button>
         <button onclick="removeQty(${i})">-</button>
-        <button onclick="removeItem(${i})">Remove</button>
       </div>
     `;
   });
@@ -241,7 +241,6 @@ function renderCart(){
 
 function addQty(i){cart[i].qty++;saveCart();}
 function removeQty(i){cart[i].qty--;if(cart[i].qty<=0)cart.splice(i,1);saveCart();}
-function removeItem(i){cart.splice(i,1);saveCart();}
 function clearCart(){cart=[];saveCart();}
 
 function saveCart(){
@@ -249,58 +248,62 @@ function saveCart(){
   renderCart();
 }
 
-/* POPUP */
-function popup(){
-  let p=document.getElementById("popup");
-  p.style.display="block";
-  setTimeout(()=>p.style.display="none",1000);
+/* CHECKOUT */
+function checkout(){
+  show("checkout");
 }
 
-/* LOGIN */
+function placeOrder(){
+  orders.push({
+    user:currentUser?.name,
+    items:cart,
+    time:new Date().toLocaleString()
+  });
+
+  localStorage.setItem("orders",JSON.stringify(orders));
+
+  cart=[];
+  saveCart();
+
+  notify("Order placed ✔");
+}
+
+/* ADMIN LOGIN */
 function login(){
-  if(document.getElementById("pass").value==="admin"){
+  let pass=document.getElementById("pass").value;
+
+  if(pass==="admin"){
     show("admin");
-    renderAdmin();
-    renderAdminChat();
+    renderAdminAll();
   }else alert("Wrong");
 }
 
-/* ADMIN */
-function renderAdmin(){
-  let box=document.getElementById("adminList");
-  box.innerHTML="";
+/* ADD PRODUCT */
+function add(){
+  let name=document.getElementById("name").value;
+  let price=document.getElementById("price").value;
+  let file=document.getElementById("img").files[0];
 
-  products.forEach((p,i)=>{
-    box.innerHTML+=`
-      <div class="card">
-        <h3>${p.name}</h3>
-        <button onclick="del(${i})">Delete</button>
-      </div>
-    `;
-  });
-}
+  let reader=new FileReader();
 
-function del(i){
-  products.splice(i,1);
-  localStorage.setItem("products",JSON.stringify(products));
-  render();
-  renderAdmin();
+  reader.onload=function(e){
+    products.push({name,price,img:e.target.result});
+    localStorage.setItem("products",JSON.stringify(products));
+    render();
+  };
+
+  reader.readAsDataURL(file);
 }
 
 /* CHAT */
 function sendMsg(){
-  let t=document.getElementById("msg").value;
-  messages.push({from:"user",text:t});
-  localStorage.setItem("messages",JSON.stringify(messages));
-  renderChat();
-}
+  messages.push({
+    from:currentUser.name,
+    text:document.getElementById("msg").value
+  });
 
-function replyMsg(){
-  let t=document.getElementById("reply").value;
-  messages.push({from:"admin",text:t});
   localStorage.setItem("messages",JSON.stringify(messages));
   renderChat();
-  renderAdminChat();
 }
 
 function renderChat(){
@@ -309,28 +312,47 @@ function renderChat(){
 
   messages.forEach(m=>{
     box.innerHTML+=`
-      <div style="background:${m.from==='admin'?'#c8e6c9':'#e3f2fd'};padding:5px;margin:5px;border-radius:8px;">
-        ${m.from}: ${m.text}
+      <div class="card">
+        <b>${m.from}:</b> ${m.text}
       </div>
     `;
   });
 }
 
-function renderAdminChat(){
-  let box=document.getElementById("adminChat");
-  box.innerHTML="";
+/* ADMIN PANEL ALL */
+function renderAdminAll(){
 
-  messages.forEach(m=>{
-    box.innerHTML+=`
-      <div style="background:${m.from==='admin'?'#c8e6c9':'#e3f2fd'};padding:5px;margin:5px;border-radius:8px;">
-        ${m.from}: ${m.text}
-      </div>
-    `;
-  });
+  /* USERS */
+  let u=document.getElementById("usersBox");
+  u.innerHTML=users.map(x=>`<div class="card">${x.name}</div>`).join("");
+
+  /* CHAT */
+  let c=document.getElementById("adminChat");
+  c.innerHTML=messages.map(m=>`
+    <div class="card"><b>${m.from}:</b> ${m.text}</div>
+  `).join("");
+
+  /* ORDERS */
+  let o=document.getElementById("ordersBox");
+  o.innerHTML=orders.map(o=>`
+    <div class="card">
+      <b>${o.user}</b><br>
+      ${o.time}
+    </div>
+  `).join("");
+}
+
+/* NOTIFICATION */
+function notify(text){
+  let n=document.getElementById("notify");
+  n.innerText=text;
+  n.style.display="block";
+
+  setTimeout(()=>n.style.display="none",1500);
 }
 
 /* INIT */
-window.onload=render;
+window.onload=()=>show("home");
 
 </script>
 
