@@ -305,7 +305,9 @@ function renderAdmin() {
 function save() {
   localStorage.setItem("products", JSON.stringify(products));
 }
-
+function goHome() {
+  show("roleScreen");   // back to Customer/Admin choice screen
+}
 </script>
 <!-- ================= BOTTOM NAV ================= -->
 <div class="bottom-nav">
