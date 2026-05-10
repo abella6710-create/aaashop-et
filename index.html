@@ -3,179 +3,163 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>AAA SHOP Ethiopia</title>
+<title>AAA SHOP</title>
 
 <style>
-body {
+
+/* ===== BASIC APP STYLE ===== */
+body{
   margin:0;
   font-family:Arial;
   background:#f4f6f8;
 }
 
-header {
+header{
   background:#1e88e5;
   color:white;
+  padding:15px;
   text-align:center;
+}
+
+.screen{
+  display:none;
   padding:15px;
 }
 
-.screen { display:none; padding:15px; }
-.active { display:block; }
-
-input, select, button {
-  width:100%;
-  padding:12px;
-  margin:6px 0;
-  border-radius:8px;
-  border:none;
+.active{
+  display:block;
 }
 
-button {
-  background:#1e88e5;
-  color:white;
-  font-weight:bold;
-}
-
-.card {
+/* ===== CARDS ===== */
+.card{
   background:white;
   padding:10px;
   margin:10px 0;
   border-radius:10px;
 }
 
-.card img {
+button{
   width:100%;
-  border-radius:10px;
+  padding:10px;
+  margin:5px 0;
+  border:none;
+  border-radius:8px;
+  background:#1e88e5;
+  color:white;
 }
 
-.delete {
-  background:red;
-}
-
-.nav {
+/* ===== BOTTOM NAV ===== */
+.bottom-nav{
   position:fixed;
   bottom:0;
-  width:100%;
+  left:0;
+  right:0;
   display:flex;
   background:white;
+  border-top:1px solid #ddd;
 }
-.nav button {
-  width:33%;
+
+.bottom-nav button{
+  flex:1;
   background:none;
-  color:#333;
+  color:#1e88e5;
 }
+
 </style>
 </head>
 
 <body>
 
-<header>AAA SHOP</header>
+<header>AAA SHOP ETHIOPIA</header>
 
-<!-- HOME -->
+<!-- ================= SCREENS ================= -->
+
 <div id="home" class="screen active">
-  <h2>Welcome</h2>
-  <button onclick="openShop()">🛍 Customer</button>
-  <button onclick="showLogin()">⚙ Admin</button>
+  <h2>Welcome 👋</h2>
+  <button onclick="openShop()">Start Shopping</button>
 </div>
 
-<!-- LOGIN -->
-<div id="login" class="screen">
-  <h3>Admin Login</h3>
-  <input id="pass" type="password" placeholder="Enter password">
-  <button onclick="login()">Login</button>
-  <button onclick="showHome()">Back</button>
-</div>
-
-<!-- SHOP -->
 <div id="shop" class="screen">
-
-  <input id="search" onkeyup="render()" placeholder="Search products">
-
-  <select id="category" onchange="render()">
-    <option value="all">All</option>
-    <option value="food">Food</option>
-    <option value="phone">Phone</option>
-    <option value="tv">TV</option>
-  </select>
-
+  <h2>Shop</h2>
   <div id="list"></div>
 </div>
 
-<!-- ADMIN -->
+<div id="login" class="screen">
+  <h2>Login</h2>
+  <input id="email" placeholder="Email">
+  <input id="pass" placeholder="Password">
+  <button onclick="login()">Login</button>
+</div>
+
 <div id="admin" class="screen">
-
-  <h3>Add Product</h3>
-
+  <h2>Admin Panel</h2>
   <input id="name" placeholder="Name">
   <input id="price" placeholder="Price">
-
-  <select id="cat">
-    <option value="food">Food</option>
-    <option value="phone">Phone</option>
-    <option value="tv">TV</option>
-  </select>
-
+  <input id="cat" placeholder="Category">
   <input id="img" type="file">
-
-  <button onclick="add()">Add</button>
-
-  <div id="adminList"></div>
+  <button onclick="add()">Add Product</button>
 </div>
 
-<!-- ORDER -->
 <div id="order" class="screen">
-  <h3>Order</h3>
-
+  <h2>Order</h2>
   <p id="orderInfo"></p>
-
-  <button>Telebirr (09******)</button>
-  <button>CBE (1000*******)</button>
-
-  <button onclick="openShop()">Back</button>
 </div>
 
-<!-- NAV -->
-<div class="nav">
-  <button onclick="showHome()">Home</button>
-  <button onclick="openShop()">Shop</button>
-  <button onclick="showLogin()">Admin</button>
+<!-- ABOUT -->
+<div id="about" class="screen">
+  <h2>About AAA SHOP</h2>
+  <p>AAA SHOP is a modern Ethiopian online store built for fast and simple shopping experience.</p>
 </div>
 
+<!-- CONTACT -->
+<div id="contact" class="screen">
+  <h2>Contact Us</h2>
+  <p>Email: aaashop@gmail.com</p>
+  <p>Phone: +251 900 000 000</p>
+</div>
+
+<!-- ================= NAV ================= -->
+<div class="bottom-nav">
+  <button onclick="showHome()">🏠</button>
+  <button onclick="openShop()">🛍</button>
+  <button onclick="showLogin()">👤</button>
+  <button onclick="show('about')">ℹ️</button>
+  <button onclick="show('contact')">📞</button>
+</div>
+
+<!-- ================= SCRIPT ================= -->
 <script>
+
+let products = JSON.parse(localStorage.getItem("products")) || [];
 let users = JSON.parse(localStorage.getItem("users")) || [];
 let currentUser = JSON.parse(localStorage.getItem("currentUser")) || null;
-let products = JSON.parse(localStorage.getItem("products")) || [];
-let isAdmin = false;
-let selected = null;
 let cart = JSON.parse(localStorage.getItem("cart")) || [];
-/* NAV SYSTEM */
+let selected = null;
+
+/* SCREEN SWITCH */
 function show(id){
   document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
   document.getElementById(id).classList.add("active");
 }
 
 function showHome(){ show("home"); }
-
-function openShop(){
-  show("shop");
-  render();
-}
-
-function showLogin(){
-  show("login");
-}
+function openShop(){ show("shop"); render(); }
+function showLogin(){ show("login"); }
 
 /* LOGIN */
 function login(){
+  let email = document.getElementById("email").value;
   let pass = document.getElementById("pass").value;
 
-  if(pass === "aaa2026"){
-    isAdmin = true;
-    show("admin");
-    render();
+  let user = users.find(u=>u.email===email && u.pass===pass);
+
+  if(user){
+    currentUser = user;
+    localStorage.setItem("currentUser", JSON.stringify(user));
+    alert("Welcome " + email);
+    showHome();
   } else {
-    alert("Wrong password");
+    alert("Wrong login");
   }
 }
 
@@ -191,82 +175,49 @@ function add(){
   reader.onload = function(e){
     products.push({name,price,cat,img:e.target.result});
     localStorage.setItem("products", JSON.stringify(products));
-    render();
+    alert("Product added");
   }
 
   reader.readAsDataURL(file);
 }
 
-/* DELETE */
-function del(i){
-  products.splice(i,1);
-  localStorage.setItem("products", JSON.stringify(products));
-  render();
+/* CART */
+function addToCart(i){
+  cart.push(products[i]);
+  localStorage.setItem("cart", JSON.stringify(cart));
+  alert("Added to cart 🛒");
 }
 
 /* BUY */
 function buy(i){
   selected = products[i];
   document.getElementById("orderInfo").innerText =
-    selected.name + " - " + selected.price + " Birr";
-
+    selected.name + " - " + selected.price;
   show("order");
 }
-function addToCart(i){
-  let cart = JSON.parse(localStorage.getItem("cart")) || [];
 
-  cart.push(products[i]);
-
-  localStorage.setItem("cart", JSON.stringify(cart));
-
-  alert("Added to cart 🛒");
-}
 /* RENDER */
 function render(){
   let box = document.getElementById("list");
-  let search = document.getElementById("search")?.value || "";
-  let cat = document.getElementById("category")?.value || "all";
-
   box.innerHTML = "";
 
   products.forEach((p,i)=>{
-    if((cat==="all" || p.cat===cat) &&
-      p.name.toLowerCase().includes(search.toLowerCase())){
+    box.innerHTML += `
+      <div class="card">
+        <img src="${p.img}" width="100%">
+        <h3>${p.name}</h3>
+        <p>${p.price} Birr</p>
 
-      box.innerHTML += `
-        <div class="card">
-          <img src="${p.img}">
-          <h3>${p.name}</h3>
-          <p>${p.price} Birr</p>
-
-          <button onclick="buy(${i})">Buy</button>
-
-          ${isAdmin ? `<button class="delete" onclick="del(${i})">Delete</button>` : ""}
-        </div>
-      `;
-    }
+        <button onclick="addToCart(${i})">Add to Cart</button>
+        <button onclick="buy(${i})">Buy</button>
+      </div>
+    `;
   });
-
-  renderAdmin();
 }
 
-/* ADMIN LIST */
-function renderAdmin(){
-  let box = document.getElementById("adminList");
-  if(!box) return;
-
-  box.innerHTML = products.map((p,i)=>`
-    <div class="card">
-      <h3>${p.name}</h3>
-      <button class="delete" onclick="del(${i})">Delete</button>
-    </div>
-  `).join("");
-}
-
-/* START */
-window.onload = ()=>render();
+window.onload = render;
 
 </script>
-<button onclick="location.href='cart.html'">🛒 Cart</button>
+
 </body>
 </html>
