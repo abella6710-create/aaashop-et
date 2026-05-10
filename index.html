@@ -147,7 +147,7 @@ button {
 let products = JSON.parse(localStorage.getItem("products")) || [];
 let isAdmin = false;
 let selected = null;
-
+let cart = JSON.parse(localStorage.getItem("cart")) || [];
 /* NAV SYSTEM */
 function show(id){
   document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
@@ -211,7 +211,15 @@ function buy(i){
 
   show("order");
 }
+function addToCart(i){
+  let cart = JSON.parse(localStorage.getItem("cart")) || [];
 
+  cart.push(products[i]);
+
+  localStorage.setItem("cart", JSON.stringify(cart));
+
+  alert("Added to cart 🛒");
+}
 /* RENDER */
 function render(){
   let box = document.getElementById("list");
