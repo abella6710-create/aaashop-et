@@ -275,6 +275,147 @@ window.addEventListener("beforeinstallprompt", (e) => {
 function showInstallButton() {
   let btn = document.createElement("button");
   btn.innerText = "📲 Install AAA SHOP";
+<!-- ================= SCRIPT ================= -->
+<script>
+
+let products = JSON.parse(localStorage.getItem("products")) || [];
+const admins = ["admin123", "aaa2026"];
+
+/* ================= NAV SYSTEM ================= */
+function show(id) {
+  document.querySelectorAll(".screen").forEach(s => {
+    s.classList.remove("active");
+    s.style.display = "none";
+  });
+
+  const el = document.getElementById(id);
+  if (el) {
+    el.style.display = "block";
+    setTimeout(() => el.classList.add("active"), 50);
+  }
+}
+
+function goHome() {
+  show("roleScreen");
+}
+
+function openCustomer() {
+  show("shop");
+  renderShop();
+}
+
+function showAdminLogin() {
+  show("adminLogin");
+}
+
+/* ================= LOGIN ================= */
+function loginAdmin() {
+  let code = document.getElementById("code").value;
+
+  if (admins.includes(code)) {
+    show("adminDashboard");
+    renderAdmin();
+  } else {
+    alert("Wrong code");
+  }
+}
+
+/* ================= ADD PRODUCT ================= */
+function addProduct() {
+  let name = document.getElementById("name").value;
+  let price = document.getElementById("price").value;
+  let file = document.getElementById("image").files[0];
+
+  if (!file) {
+    alert("Please select an image");
+    return;
+  }
+
+  let reader = new FileReader();
+
+  reader.onload = function(e) {
+    products.push({
+      name: name,
+      price: price,
+      image: e.target.result
+    });
+
+    localStorage.setItem("products", JSON.stringify(products));
+
+    renderShop();
+    renderAdmin();
+  };
+
+  reader.readAsDataURL(file);
+}
+
+/* ================= RENDER SHOP ================= */
+function renderShop() {
+  let box = document.getElementById("shopList");
+  box.innerHTML = "";
+
+  products.forEach(p => {
+    box.innerHTML += `
+      <div class="card">
+        <img src="${p.image}">
+        <h3>${p.name}</h3>
+        <p class="price">${p.price} Birr</p>
+      </div>
+    `;
+  });
+}
+
+/* ================= RENDER ADMIN ================= */
+function renderAdmin() {
+  let box = document.getElementById("adminList");
+  box.innerHTML = "";
+
+  products.forEach((p, index) => {
+    box.innerHTML += `
+      <div class="card">
+        <h3>${p.name}</h3>
+        <p>${p.price} Birr</p>
+        <button onclick="deleteProduct(${index})">Delete</button>
+      </div>
+    `;
+  });
+}
+
+/* ================= DELETE PRODUCT ================= */
+function deleteProduct(index) {
+  products.splice(index, 1);
+  localStorage.setItem("products", JSON.stringify(products));
+  renderShop();
+  renderAdmin();
+}
+
+/* ================= INIT ================= */
+window.onload = function () {
+  show("roleScreen");
+  renderShop();
+};
+
+/* ================= SERVICE WORKER ================= */
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("sw.js")
+    .then(() => console.log("Service Worker registered"))
+    .catch(err => console.log("SW error:", err));
+}
+
+/* ================= PWA INSTALL BUTTON ================= */
+let deferredPrompt;
+
+window.addEventListener("beforeinstallprompt", (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+
+  showInstallButton();
+});
+
+function showInstallButton() {
+  const btn = document.createElement("button");
+
+  btn.innerText = "📲 Install AAA SHOP";
 
   btn.style.position = "fixed";
   btn.style.bottom = "80px";
@@ -285,15 +426,18 @@ function showInstallButton() {
   btn.style.padding = "12px";
   btn.style.borderRadius = "10px";
   btn.style.zIndex = "9999";
+  btn.style.fontSize = "14px";
 
   document.body.appendChild(btn);
 
   btn.onclick = async function () {
     btn.remove();
-    deferredPrompt.prompt();
 
-    await deferredPrompt.userChoice;
-    deferredPrompt = null;
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      await deferredPrompt.userChoice;
+      deferredPrompt = null;
+    }
   };
 }
 
