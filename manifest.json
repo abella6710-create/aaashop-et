@@ -3,9 +3,8 @@
   "short_name": "AAA SHOP",
   "start_url": "index.html",
   "display": "standalone",
-  "background_color": "#1e88e5",
+  "background_color": "#ffffff",
   "theme_color": "#1e88e5",
-  "description": "AAA SHOP - Online store in Ethiopia",
   "icons": [
     {
       "src": "logo.png",
