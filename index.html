@@ -6,6 +6,19 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
+  .screen {
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  display: none;
+}
+
+.screen.active {
+  display: block;
+  opacity: 1;
+  transform: translateY(0);
+}
+  </style>
 /* ===== BASE ===== */
 body {
   margin: 0;
@@ -98,14 +111,110 @@ button:hover {
 <div class="container">
 
 <!-- ===== ROLE SCREEN ===== -->
-<div id="roleScreen" class="screen" style="display:block;">
-  <h3>Choose Mode</h3>
-  <button onclick="openCustomer()">🛒 Customer</button>
-  <button onclick="showAdminLogin()">🔐 Admin</button>
-</div>
+<div id="roleScreen" class="screen" style="display:block; text-align:center; padding:40px;">
 
+  <h2 style="margin-bottom:20px;">Welcome to AAA SHOP</h2>
+  <p style="margin-bottom:20px; color:#666;">Choose how you want to continue</p>
+
+  <div style="display:flex; flex-direction:column; gap:15px; max-width:300px; margin:auto;">
+
+    <button onclick="openCustomer()" style="
+      padding:15px;
+      font-size:18px;
+      border:none;
+      border-radius:12px;
+      background:#1e88e5;
+      color:white;
+      cursor:pointer;
+    ">
+      🛒 Continue as Customer
+    </button>
+
+    <button onclick="showAdminLogin()" style="
+      padding:15px;
+      font-size:18px;
+      border:none;
+      border-radius:12px;
+      background:#1565c0;
+      color:white;
+      cursor:pointer;
+    ">
+      🔐 Admin Login
+    </button>
+
+  </div>
+
+</div>
+<div id="adminDashboard" class="screen" style="display:none;">
+
+  <h2>🛠 Admin Dashboard</h2>
+
+  <p style="color:green; font-weight:bold;">
+    You are in ADMIN MODE
+  </p>
+
+  <div style="background:white; padding:15px; border-radius:10px; margin-bottom:15px;">
+    <h3>Add Product</h3>
+
+    <input id="name" placeholder="Product name">
+    <input id="price" placeholder="Price">
+    <input id="image" type="file">
+
+    <button onclick="addProduct()">➕ Add Product</button>
+  </div>
+
+  <div id="productList"></div>
+
+  <button onclick="logout()">Logout</button>
+
+</div>
 <!-- ===== ADMIN LOGIN ===== -->
-<div id="adminLogin" class="screen">
+<div id="adminLogin" class="screen" style="text-align:center; padding:40px;">
+
+  <h2 style="margin-bottom:20px;">🔐 Admin Login</h2>
+  <p style="color:#666; margin-bottom:20px;">Enter admin credentials</p>
+
+  <div style="max-width:300px; margin:auto; display:flex; flex-direction:column; gap:12px;">
+
+    <input id="email" type="email" placeholder="Email" style="
+      padding:12px;
+      border-radius:10px;
+      border:1px solid #ccc;
+      font-size:16px;
+    ">
+
+    <input id="code" type="password" placeholder="Admin Code" style="
+      padding:12px;
+      border-radius:10px;
+      border:1px solid #ccc;
+      font-size:16px;
+    ">
+
+    <button onclick="loginAdmin()" style="
+      padding:12px;
+      border:none;
+      border-radius:10px;
+      background:#1e88e5;
+      color:white;
+      font-size:16px;
+      cursor:pointer;
+    ">
+      Login
+    </button>
+
+    <button onclick="back()" style="
+      padding:10px;
+      border:none;
+      background:transparent;
+      color:#1565c0;
+      cursor:pointer;
+    ">
+      ← Back
+    </button>
+
+  </div>
+
+</div>
   <h3>Admin Login</h3>
   <input id="email" type="email" placeholder="Email">
   <input id="code" type="password" placeholder="Admin code">
@@ -114,7 +223,7 @@ button:hover {
 </div>
 
 <!-- ===== ADMIN PANEL ===== -->
-<div id="adminPanel" class="screen">
+<div id="adminDashboard" class="screen">
   <h3>Admin Panel</h3>
 
   <input id="name" placeholder="Product name">
@@ -143,8 +252,20 @@ let isAdmin = false;
 
 /* ===== NAVIGATION ===== */
 function show(screen) {
-  document.querySelectorAll(".screen").forEach(s => s.style.display = "none");
-  document.getElementById(screen).style.display = "block";
+  document.querySelectorAll(".screen").forEach(s => {
+    s.classList.remove("active");
+    s.style.display = "none";
+  });
+
+  let target = document.getElementById(screen);
+
+  if (target) {
+    target.style.display = "block";
+
+    setTimeout(() => {
+      target.classList.add("active");
+    }, 10);
+  }
 }
 
 /* ===== ROLE ===== */
@@ -169,7 +290,10 @@ function loginAdmin() {
 
   if (admins.includes(code)) {
     isAdmin = true;
-    show("adminPanel");
+
+    show("adminDashboard");
+    render();
+
     alert("Welcome " + email);
   } else {
     alert("Wrong admin code");
@@ -240,7 +364,7 @@ function toggleStock(i) {
 
 /* ===== RENDER ===== */
 function render() {
-  let box = document.getElementById("productList");
+  let box = document.getElementById("productList") || document.getElementById("shopProductList");
   box.innerHTML = "";
 
   products.forEach((p, i) => {
