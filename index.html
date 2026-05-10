@@ -346,7 +346,13 @@ function add(){
 
   reader.readAsDataURL(file);
 }
+function deleteProduct(i){
+  products.splice(i,1);
+  localStorage.setItem("products", JSON.stringify(products));
 
+  render();
+  renderAdminAll();
+}
 /* CHAT */
 function sendMsg(){
   messages.push({
