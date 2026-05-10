@@ -143,7 +143,8 @@ button {
 </div>
 
 <script>
-
+let users = JSON.parse(localStorage.getItem("users")) || [];
+let currentUser = JSON.parse(localStorage.getItem("currentUser")) || null;
 let products = JSON.parse(localStorage.getItem("products")) || [];
 let isAdmin = false;
 let selected = null;
