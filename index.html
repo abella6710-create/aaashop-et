@@ -145,7 +145,15 @@ function show(id){
 function showHome(){ show("home"); }
 function openShop(){ show("shop"); render(); }
 function showLogin(){ show("login"); }
+document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
 
+  if(id === "cart"){
+    renderCart();
+  }
+}
+
+/* OTHER FUNCTIONS BELOW */
 /* LOGIN */
 function login(){
   let email = document.getElementById("email").value;
@@ -187,7 +195,19 @@ function addToCart(i){
   localStorage.setItem("cart", JSON.stringify(cart));
   alert("Added to cart 🛒");
 }
+function renderCart(){
+  let box = document.getElementById("cartList");
+  box.innerHTML = "";
 
+  cart.forEach((p,i)=>{
+    box.innerHTML += `
+      <div class="card">
+        <h3>${p.name}</h3>
+        <p>${p.price} Birr</p>
+      </div>
+    `;
+  });
+}
 /* BUY */
 function buy(i){
   selected = products[i];
@@ -218,6 +238,9 @@ function render(){
 window.onload = render;
 
 </script>
-
+<div id="cart" class="screen">
+  <h2>Your Cart 🛒</h2>
+  <div id="cartList"></div>
+</div>
 </body>
 </html>
