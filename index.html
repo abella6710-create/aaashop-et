@@ -7,9 +7,8 @@
   <title>AAA SHOP Ethiopia - Online Store</title>
 
   <meta name="description" content="AAA SHOP Ethiopia is a modern online store where you can buy products easily.">
-  <meta name="keywords" content="AAA SHOP, Ethiopia shop, online store Ethiopia, buy products">
+  <meta name="keywords" content="AAA SHOP, Ethiopia shop, online store Ethiopia">
   <meta name="robots" content="index, follow">
-  <meta name="author" content="AAA SHOP">
 
   <!-- PWA -->
   <link rel="manifest" href="manifest.json">
@@ -17,174 +16,118 @@
 
   <!-- ICON -->
   <link rel="icon" href="logo.png">
-<style>
 
-/* ================= BASE ================= */
-body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  background: #f4f6f8;
-  color: #222;
-}
+  <style>
 
-/* ================= HEADER ================= */
-header {
-  background: linear-gradient(135deg, #1e88e5, #1565c0);
-  color: white;
-  text-align: center;
-  padding: 18px;
-}
+  /* ================= BASE ================= */
+  body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f4f6f8;
+    color: #222;
+  }
 
-/* ================= NAVBAR ================= */
-nav {
-  background: #1565c0;
-  padding: 12px;
-  text-align: center;
-}
+  /* ================= HEADER ================= */
+  header {
+    background: linear-gradient(135deg, #1e88e5, #1565c0);
+    color: white;
+    text-align: center;
+    padding: 18px;
+  }
 
-nav a {
-  color: white;
-  text-decoration: none;
-  margin: 0 10px;
-  font-weight: bold;
-}
+  /* ================= INPUTS ================= */
+  input {
+    width: 100%;
+    padding: 12px;
+    margin: 6px 0;
+    border-radius: 10px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+  }
 
-/* ================= LAYOUT ================= */
-.container {
-  padding: 15px;
-  padding-bottom: 80px;
-}
-
-/* ================= INPUTS ================= */
-input {
-  width: 100%;
-  padding: 12px;
-  margin: 6px 0;
-  border-radius: 10px;
-  border: 1px solid #ccc;
-  font-size: 16px;
-}
-
-/* ================= BUTTONS ================= */
-<style>
+  /* ================= BUTTONS ================= */
   button {
-  width: 100%;
-  padding: 12px;
-  margin: 6px 0;
-  border-radius: 10px;
-  border: none;
-  background: #1e88e5;
-  color: white;
-  font-weight: bold;
-  font-size: 16px;
-  cursor: pointer;
-  transition: 0.2s;
-}
+    width: 100%;
+    padding: 12px;
+    margin: 6px 0;
+    border-radius: 10px;
+    border: none;
+    background: #1e88e5;
+    color: white;
+    font-weight: bold;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.2s;
+  }
 
-button:hover {
-  background: #1565c0;
-}
+  button:hover {
+    background: #1565c0;
+  }
 
-/* ================= SCREENS ================= */
-.screen {
-  display: none;
-}
+  /* ================= SCREENS ================= */
+  .screen {
+    display: none;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: 0.3s ease;
+  }
 
-/* ================= PRODUCT CARD ================= */
-.card {
-  background: white;
-  padding: 12px;
-  margin-bottom: 12px;
-  border-radius: 12px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-  transition: 0.3s;
-}
+  .screen.active {
+    display: block;
+    opacity: 1;
+    transform: translateY(0);
+  }
 
-.card:hover {
-  transform: translateY(-3px);
-}
+  /* ================= CARD ================= */
+  .card {
+    background: white;
+    padding: 12px;
+    margin: 10px 0;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  }
 
-.card img {
-  width: 100%;
-  height: 180px;
-  object-fit: cover;
-  border-radius: 10px;
-}
+  .card img {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    border-radius: 10px;
+  }
 
-.price {
-  color: #1e88e5;
-  font-weight: bold;
-  font-size: 18px;
-}
+  .price {
+    color: #1e88e5;
+    font-weight: bold;
+  }
 
-/* ================= ADMIN BUTTONS ================= */
-.admin-btns {
-  display: flex;
-  gap: 10px;
-}
+  /* ================= BOTTOM NAV ================= */
+  .bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: white;
+    display: flex;
+    justify-content: space-around;
+    padding: 10px 0;
+    box-shadow: 0 -3px 12px rgba(0,0,0,0.1);
+  }
 
-.admin-btns button {
-  width: 50%;
-}
+  .bottom-nav button {
+    background: none;
+    color: #666;
+    width: auto;
+    font-size: 14px;
+  }
 
-.admin-btns button.delete {
-  background: #e53935;
-}
-
-/* ================= BOTTOM NAV ================= */
-.bottom-nav {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background: white;
-  display: flex;
-  justify-content: space-around;
-  padding: 10px 0;
-  box-shadow: 0 -3px 12px rgba(0,0,0,0.1);
-  z-index: 999;
-}
-
-.bottom-nav button {
-  background: none;
-  border: none;
-  font-size: 14px;
-  color: #666;
-  padding: 6px;
-  width: auto;
-  transition: 0.2s;
-}
-
-.bottom-nav button.active {
-  color: #1e88e5;
-  font-weight: bold;
-  transform: scale(1.1);
-}
-
-/* ================= ANIMATION ================= */
-.screen {
-  opacity: 0;
-  transform: translateY(10px);
-  transition: 0.3s ease;
-}
-
-.screen.active {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-</style>
+  </style>
+</head>
 
 <body>
 
-<!-- ================= SPLASH ================= -->
-<div id="splash" class="splash">
-  <div class="logo">AAA SHOP</div>
-  <div class="loader"></div>
-</div>
-
+<!-- ================= HEADER ================= -->
 <header>AAA SHOP</header>
 
+<!-- ================= SCREENS ================= -->
 <div id="roleScreen" class="screen active">
   <h2>Welcome</h2>
   <button onclick="openCustomer()">🛒 Customer</button>
@@ -193,20 +136,16 @@ button:hover {
 
 <div id="adminLogin" class="screen">
   <h3>Admin Login</h3>
-  <input id="email" placeholder="Email">
-  <input id="code" type="password" placeholder="Code">
+  <input id="code" type="password" placeholder="Enter Code">
   <button onclick="loginAdmin()">Login</button>
 </div>
 
 <div id="adminDashboard" class="screen">
   <h3>Admin Panel</h3>
-
-  <input id="name" placeholder="Name">
+  <input id="name" placeholder="Product Name">
   <input id="price" placeholder="Price">
   <input id="image" type="file">
-
-  <button onclick="addProduct()">Add</button>
-
+  <button onclick="addProduct()">Add Product</button>
   <div id="adminList"></div>
 </div>
 
@@ -215,22 +154,20 @@ button:hover {
   <div id="shopList"></div>
 </div>
 
+<!-- ================= BOTTOM NAV ================= -->
+<div class="bottom-nav">
+  <button onclick="goHome()">🏠 Home</button>
+  <button onclick="openCustomer()">🛍 Shop</button>
+  <button onclick="showAdminLogin()">⚙ Admin</button>
+</div>
+
+<!-- ================= SCRIPT ================= -->
 <script>
 
-/* ================= DATA ================= */
 let products = JSON.parse(localStorage.getItem("products")) || [];
 const admins = ["admin123", "aaa2026"];
-let isAdmin = false;
 
-/* ================= SPLASH ================= */
-window.onload = function () {
-  setTimeout(() => {
-    document.getElementById("splash").style.display = "none";
-    show("roleScreen");
-  }, 3000);
-};
-
-/* ================= NAV ================= */
+/* NAV */
 function show(id) {
   document.querySelectorAll(".screen").forEach(s => {
     s.classList.remove("active");
@@ -238,13 +175,14 @@ function show(id) {
   });
 
   let el = document.getElementById(id);
-  if (el) {
-    el.style.display = "block";
-    setTimeout(() => el.classList.add("active"), 10);
-  }
+  el.style.display = "block";
+  setTimeout(() => el.classList.add("active"), 50);
 }
 
-/* ================= MODE ================= */
+function goHome() {
+  show("roleScreen");
+}
+
 function openCustomer() {
   show("shop");
   renderShop();
@@ -254,12 +192,10 @@ function showAdminLogin() {
   show("adminLogin");
 }
 
-/* ================= LOGIN ================= */
+/* LOGIN */
 function loginAdmin() {
   let code = document.getElementById("code").value;
-
   if (admins.includes(code)) {
-    isAdmin = true;
     show("adminDashboard");
     renderAdmin();
   } else {
@@ -267,29 +203,26 @@ function loginAdmin() {
   }
 }
 
-/* ================= ADD ================= */
+/* ADD PRODUCT */
 function addProduct() {
   let name = document.getElementById("name").value;
   let price = document.getElementById("price").value;
   let file = document.getElementById("image").files[0];
 
   let reader = new FileReader();
-
   reader.onload = function(e) {
     products.push({ name, price, image: e.target.result });
-    save();
-    renderAdmin();
+    localStorage.setItem("products", JSON.stringify(products));
     renderShop();
+    renderAdmin();
   };
-
   reader.readAsDataURL(file);
 }
 
-/* ================= RENDER ================= */
+/* RENDER */
 function renderShop() {
   let box = document.getElementById("shopList");
   box.innerHTML = "";
-
   products.forEach(p => {
     box.innerHTML += `
       <div class="card">
@@ -304,42 +237,27 @@ function renderShop() {
 function renderAdmin() {
   let box = document.getElementById("adminList");
   box.innerHTML = "";
-
   products.forEach(p => {
     box.innerHTML += `
       <div class="card">
-        <img src="${p.image}">
         <h3>${p.name}</h3>
-        <p class="price">${p.price}</p>
+        <p>${p.price}</p>
       </div>
     `;
   });
 }
 
-/* ================= SAVE ================= */
-function save() {
-  localStorage.setItem("products", JSON.stringify(products));
-}
-function goHome() {
-  show("roleScreen");   // back to Customer/Admin choice screen
-}
-</script>
-<!-- ================= BOTTOM NAV ================= -->
-<div class="bottom-nav">
+/* INIT */
+window.onload = function () {
+  show("roleScreen");
+};
 
-  <button onclick="goHome()" id="navHome">🏠<br>Home</button>
-
-  <button onclick="openCustomer()" id="navShop">🛍<br>Shop</button>
-
-  <button onclick="showAdminLogin()" id="navAdmin">⚙<br>Admin</button>
-
-</div>
-  <script>
+/* SERVICE WORKER */
 if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("sw.js")
-    .then(() => console.log("Service Worker registered"))
-    .catch(err => console.log("SW error:", err));
+  navigator.serviceWorker.register("sw.js");
 }
-  </script>
+
+</script>
+
 </body>
 </html>
