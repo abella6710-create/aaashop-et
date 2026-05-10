@@ -11,8 +11,10 @@ body {
   margin: 0;
   font-family: Arial, sans-serif;
   background: #f4f6f8;
+  color: #222;
 }
 
+/* ===== HEADER ===== */
 header {
   background: linear-gradient(135deg, #1e88e5, #1565c0);
   color: white;
@@ -20,17 +22,31 @@ header {
   padding: 18px;
 }
 
+/* ===== NAVBAR (if you use it) ===== */
+nav {
+  background: #1565c0;
+  padding: 12px;
+  text-align: center;
+}
+
+nav a {
+  color: white;
+  text-decoration: none;
+  margin: 0 10px;
+  font-weight: bold;
+}
+
 /* ===== LAYOUT ===== */
 .container {
   padding: 15px;
 }
 
-/* ===== INPUTS ===== */
+/* ===== INPUTS & BUTTONS ===== */
 input, button {
   width: 100%;
   padding: 12px;
   margin: 6px 0;
-  border-radius: 8px;
+  border-radius: 10px;
   border: 1px solid #ccc;
   font-size: 16px;
 }
@@ -41,6 +57,7 @@ button {
   color: white;
   font-weight: bold;
   cursor: pointer;
+  transition: 0.3s;
 }
 
 button:hover {
@@ -56,9 +73,14 @@ button:hover {
 .card {
   background: white;
   padding: 12px;
-  margin-bottom: 10px;
-  border-radius: 10px;
-  box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+  margin-bottom: 12px;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  transition: 0.3s;
+}
+
+.card:hover {
+  transform: translateY(-4px);
 }
 
 .card img {
@@ -71,25 +93,35 @@ button:hover {
 .price {
   color: #1e88e5;
   font-weight: bold;
+  font-size: 18px;
+}
+
+/* ===== ADMIN BUTTONS ===== */
+.admin-btns {
+  display: flex;
+  gap: 10px;
 }
 
 .admin-btns button {
-  width: 48%;
-  display: inline-block;
+  width: 50%;
 }
 
 .admin-btns button.delete {
-  background: red;
+  background: #e53935;
+}
+
+/* ===== ANIMATION SUPPORT ===== */
+.screen {
+  opacity: 0;
+  transform: translateY(10px);
+  transition: 0.3s ease;
+}
+
+.screen.active {
+  opacity: 1;
+  transform: translateY(0);
 }
 </style>
-
-
-header {
-  background: linear-gradient(135deg, #1e88e5, #1565c0);
-  color: white;
-  text-align: center;
-  padding: 18px;
-}
 
 /* ===== LAYOUT ===== */
 .container {
