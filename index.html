@@ -6,11 +6,12 @@
 
 <title>AAA SHOP Ethiopia</title>
 
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#1e88e5">
-
 <style>
-body { margin:0; font-family:Arial; background:#f4f6f8; }
+body {
+  margin:0;
+  font-family:Arial;
+  background:#f4f6f8;
+}
 
 header {
   background:#1e88e5;
@@ -19,17 +20,13 @@ header {
   padding:15px;
 }
 
-/* NAV */
-.nav {
-  display:flex;
-  gap:5px;
-  padding:10px;
-}
+.screen { display:none; padding:15px; }
+.active { display:block; }
 
 input, select, button {
-  padding:10px;
-  margin:5px 0;
   width:100%;
+  padding:12px;
+  margin:6px 0;
   border-radius:8px;
   border:none;
 }
@@ -40,11 +37,6 @@ button {
   font-weight:bold;
 }
 
-/* SCREEN */
-.screen { display:none; padding:10px; }
-.active { display:block; }
-
-/* CARD */
 .card {
   background:white;
   padding:10px;
@@ -57,15 +49,21 @@ button {
   border-radius:10px;
 }
 
-.deleteBtn {
+.delete {
   background:red;
-  margin-top:5px;
 }
 
-/* TOP BAR */
-.topbar {
+.nav {
+  position:fixed;
+  bottom:0;
+  width:100%;
   display:flex;
-  gap:5px;
+  background:white;
+}
+.nav button {
+  width:33%;
+  background:none;
+  color:#333;
 }
 </style>
 </head>
@@ -74,30 +72,37 @@ button {
 
 <header>AAA SHOP</header>
 
-<!-- ================= LOGIN ================= -->
-<div id="login" class="screen active">
+<!-- HOME -->
+<div id="home" class="screen active">
+  <h2>Welcome</h2>
+  <button onclick="openShop()">🛍 Customer</button>
+  <button onclick="showLogin()">⚙ Admin</button>
+</div>
+
+<!-- LOGIN -->
+<div id="login" class="screen">
   <h3>Admin Login</h3>
   <input id="pass" type="password" placeholder="Enter password">
   <button onclick="login()">Login</button>
+  <button onclick="showHome()">Back</button>
 </div>
 
-<!-- ================= SHOP ================= -->
+<!-- SHOP -->
 <div id="shop" class="screen">
 
-  <!-- SEARCH + CATEGORY -->
-  <input id="search" onkeyup="render()" placeholder="Search products...">
+  <input id="search" onkeyup="render()" placeholder="Search products">
 
   <select id="category" onchange="render()">
     <option value="all">All</option>
     <option value="food">Food</option>
-    <option value="phone">Phones</option>
+    <option value="phone">Phone</option>
     <option value="tv">TV</option>
   </select>
 
   <div id="list"></div>
 </div>
 
-<!-- ================= ADMIN ================= -->
+<!-- ADMIN -->
 <div id="admin" class="screen">
 
   <h3>Add Product</h3>
@@ -118,41 +123,59 @@ button {
   <div id="adminList"></div>
 </div>
 
-<!-- ================= ORDER ================= -->
+<!-- ORDER -->
 <div id="order" class="screen">
-  <h3>Order Checkout</h3>
+  <h3>Order</h3>
 
   <p id="orderInfo"></p>
-
-  <h4>Choose Payment</h4>
 
   <button>Telebirr (09******)</button>
   <button>CBE (1000*******)</button>
 
-  <button onclick="back()">Back</button>
+  <button onclick="openShop()">Back</button>
+</div>
+
+<!-- NAV -->
+<div class="nav">
+  <button onclick="showHome()">Home</button>
+  <button onclick="openShop()">Shop</button>
+  <button onclick="showLogin()">Admin</button>
 </div>
 
 <script>
-let products = JSON.parse(localStorage.getItem("p")) || [];
+
+let products = JSON.parse(localStorage.getItem("products")) || [];
 let isAdmin = false;
-let selectedProduct = null;
+let selected = null;
+
+/* NAV SYSTEM */
+function show(id){
+  document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+}
+
+function showHome(){ show("home"); }
+
+function openShop(){
+  show("shop");
+  render();
+}
+
+function showLogin(){
+  show("login");
+}
 
 /* LOGIN */
 function login(){
   let pass = document.getElementById("pass").value;
+
   if(pass === "aaa2026"){
     isAdmin = true;
-    show("shop");
+    show("admin");
     render();
   } else {
     alert("Wrong password");
   }
-}
-
-/* NAV */
-function show(id){
-  document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
-  document.getElementById(id).classList.add("active");
 }
 
 /* ADD PRODUCT */
@@ -163,22 +186,33 @@ function add(){
   let file = document.getElementById("img").files[0];
 
   let reader = new FileReader();
-  reader.onload = e=>{
+
+  reader.onload = function(e){
     products.push({name,price,cat,img:e.target.result});
-    localStorage.setItem("p", JSON.stringify(products));
+    localStorage.setItem("products", JSON.stringify(products));
     render();
   }
+
   reader.readAsDataURL(file);
 }
 
 /* DELETE */
 function del(i){
   products.splice(i,1);
-  localStorage.setItem("p", JSON.stringify(products));
+  localStorage.setItem("products", JSON.stringify(products));
   render();
 }
 
-/* SEARCH + CATEGORY */
+/* BUY */
+function buy(i){
+  selected = products[i];
+  document.getElementById("orderInfo").innerText =
+    selected.name + " - " + selected.price + " Birr";
+
+  show("order");
+}
+
+/* RENDER */
 function render(){
   let box = document.getElementById("list");
   let search = document.getElementById("search")?.value || "";
@@ -187,20 +221,20 @@ function render(){
   box.innerHTML = "";
 
   products.forEach((p,i)=>{
-    if(
-      (cat==="all" || p.cat===cat) &&
-      p.name.toLowerCase().includes(search.toLowerCase())
-    ){
+    if((cat==="all" || p.cat===cat) &&
+      p.name.toLowerCase().includes(search.toLowerCase())){
+
       box.innerHTML += `
-      <div class="card">
-        <img src="${p.img}">
-        <h3>${p.name}</h3>
-        <p>${p.price} Birr</p>
+        <div class="card">
+          <img src="${p.img}">
+          <h3>${p.name}</h3>
+          <p>${p.price} Birr</p>
 
-        <button onclick="buy(${i})">Buy</button>
+          <button onclick="buy(${i})">Buy</button>
 
-        ${isAdmin ? `<button class="deleteBtn" onclick="del(${i})">Delete</button>` : ""}
-      </div>`;
+          ${isAdmin ? `<button class="delete" onclick="del(${i})">Delete</button>` : ""}
+        </div>
+      `;
     }
   });
 
@@ -215,26 +249,14 @@ function renderAdmin(){
   box.innerHTML = products.map((p,i)=>`
     <div class="card">
       <h3>${p.name}</h3>
-      <button onclick="del(${i})">Delete</button>
+      <button class="delete" onclick="del(${i})">Delete</button>
     </div>
   `).join("");
 }
 
-/* BUY */
-function buy(i){
-  selectedProduct = products[i];
-  document.getElementById("orderInfo").innerText =
-    selectedProduct.name + " - " + selectedProduct.price + " Birr";
+/* START */
+window.onload = ()=>render();
 
-  show("order");
-}
-
-/* BACK */
-function back(){
-  show("shop");
-}
-
-render();
 </script>
 
 </body>
