@@ -6,13 +6,88 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-/* ===== PRODUCT CARD ===== */
+
+/* ================= SPLASH ================= */
+.splash {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #1e88e5, #1565c0);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  color: white;
+  animation: fadeOut 0.5s ease 3s forwards;
+}
+
+.logo {
+  font-size: 32px;
+  font-weight: bold;
+  animation: zoomIn 1s ease;
+}
+
+.loader {
+  margin-top: 20px;
+  width: 40px;
+  height: 40px;
+  border: 4px solid rgba(255,255,255,0.3);
+  border-top: 4px solid white;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes zoomIn {
+  from { transform: scale(0.5); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+@keyframes fadeOut {
+  to { opacity: 0; visibility: hidden; }
+}
+
+/* ================= BASE ================= */
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #eef3f8;
+}
+
+/* ================= HEADER ================= */
+header {
+  background: linear-gradient(135deg, #1e88e5, #1565c0);
+  color: white;
+  text-align: center;
+  padding: 16px;
+}
+
+/* ================= SCREEN SYSTEM ================= */
+.screen {
+  display: none;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: 0.3s ease;
+  padding: 15px;
+}
+
+.screen.active {
+  display: block;
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ================= CARD ================= */
 .card {
   background: white;
   padding: 12px;
-  margin-bottom: 10px;
-  border-radius: 10px;
-  box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+  margin-bottom: 12px;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
 }
 
 .card img {
@@ -25,459 +100,178 @@
 .price {
   color: #1e88e5;
   font-weight: bold;
-  font-size: 18px;
 }
 
-/* ===== ADMIN BUTTONS ===== */
-.admin-btns {
-  display: flex;
-  gap: 10px;
-}
-
-.admin-btns button {
-  width: 50%;
-}
-
-.admin-btns button.delete {
-  background: #e53935;
-}
-
-/* ===== ANIMATION SUPPORT ===== */
-.screen {
-  opacity: 0;
-  transform: translateY(10px);
-  transition: 0.3s ease;
-  display: none;
-}
-
-.screen.active {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-/* ===== BASE ===== */
-body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  background: #f4f6f8;
-}
-
-/* ===== LAYOUT ===== */
-.container {
-  padding: 15px;
-}
-
-/* ===== INPUTS ===== */
-input, button {
+/* ================= BUTTONS ================= */
+button {
   width: 100%;
   padding: 12px;
   margin: 6px 0;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-  font-size: 16px;
-}
-
-button {
+  border-radius: 10px;
   border: none;
   background: #1e88e5;
   color: white;
   font-weight: bold;
-  cursor: pointer;
 }
 
-button:hover {
-  background: #1565c0;
-}
-/* ===== BASE ===== */
-body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  background: #f4f6f8;
-  color: #222;
-}
-
-/* ===== HEADER ===== */
-header {
-  background: linear-gradient(135deg, #1e88e5, #1565c0);
-  color: white;
-  text-align: center;
-  padding: 18px;
-}
-
-/* ===== NAVBAR (if you use it) ===== */
-nav {
-  background: #1565c0;
-  padding: 12px;
-  text-align: center;
-}
-
-nav a {
-  color: white;
-  text-decoration: none;
-  margin: 0 10px;
-  font-weight: bold;
-}
-
-/* ===== LAYOUT ===== */
-.container {
-  padding: 15px;
-}
-
-/* ===== INPUTS & BUTTONS ===== */
-input, button {
+/* ================= INPUT ================= */
+input {
   width: 100%;
   padding: 12px;
   margin: 6px 0;
   border-radius: 10px;
   border: 1px solid #ccc;
-  font-size: 16px;
-}
-
-button {
-  border: none;
-  background: #1e88e5;
-  color: white;
-  font-weight: bold;
-  cursor: pointer;
-  transition: 0.3s;
-}
-
-button:hover {
-  background: #1565c0;
-}
-
-/* ===== SCREENS ===== */
-.screen {
-  display: none;
-}
-
-/* ===== PRODUCT CARD ===== */
-.card {
-  background: white;
-  padding: 12px;
-  margin-bottom: 12px;
-  border-radius: 12px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-  transition: 0.3s;
-}
-
-.card:hover {
-  transform: translateY(-4px);
-}
-
-.card img {
-  width: 100%;
-  height: 180px;
-  object-fit: cover;
-  border-radius: 10px;
 }
 
 </style>
+</head>
 
 <body>
-<nav style="background:#1565c0; padding:12px; text-align:center;">
-  <a href="index.html" style="color:white; margin:0 10px; text-decoration:none;">Home</a>
-  <a href="products.html" style="color:white; margin:0 10px; text-decoration:none;">Products</a>
-  <a href="about.html" style="color:white; margin:0 10px; text-decoration:none;">About</a>
-  <a href="contact.html" style="color:white; margin:0 10px; text-decoration:none;">Contact</a>
-</nav>
-<header>
-  <h1>AAA SHOP</h1>
-</header>
 
-<div class="container">
-
-<!-- ===== ROLE SCREEN ===== -->
-<div id="roleScreen" class="screen" style="display:block; text-align:center; padding:40px;">
-
-  <h2 style="margin-bottom:20px;">Welcome to AAA SHOP</h2>
-  <p style="margin-bottom:20px; color:#666;">Choose how you want to continue</p>
-
-  <div style="display:flex; flex-direction:column; gap:15px; max-width:300px; margin:auto;">
-
-    <button onclick="openCustomer()" style="
-      padding:15px;
-      font-size:18px;
-      border:none;
-      border-radius:12px;
-      background:#1e88e5;
-      color:white;
-      cursor:pointer;
-    ">
-      🛒 Continue as Customer
-    </button>
-
-    <button onclick="showAdminLogin()" style="
-      padding:15px;
-      font-size:18px;
-      border:none;
-      border-radius:12px;
-      background:#1565c0;
-      color:white;
-      cursor:pointer;
-    ">
-      🔐 Admin Login
-    </button>
+<!-- ================= SPLASH ================= -->
+<div id="splash" class="splash">
+  <div class="logo">AAA SHOP</div>
+  <div class="loader"></div>
 </div>
 
-<div id="adminDashboard" class="screen" style="display:none;">
+<header>AAA SHOP</header>
 
-  <h2>🛠 Admin Dashboard</h2>
-
-  <p style="color:green; font-weight:bold;">
-    You are in ADMIN MODE
-  </p>
-
-  <div style="background:white; padding:15px; border-radius:10px; margin-bottom:15px;">
-    <h3>Add Product</h3>
-
-    <input id="name" placeholder="Product name">
-    <input id="price" placeholder="Price">
-    <input id="image" type="file">
-
-    <button onclick="addProduct()">➕ Add Product</button>
-  </div>
-
-  <div id="productList"></div>
-
-  <button onclick="logout()">Logout</button>
-
+<div id="roleScreen" class="screen active">
+  <h2>Welcome</h2>
+  <button onclick="openCustomer()">🛒 Customer</button>
+  <button onclick="showAdminLogin()">🔐 Admin</button>
 </div>
-<!-- ===== ADMIN LOGIN ===== -->
-<div id="adminLogin" class="screen" style="text-align:center; padding:40px;">
 
-  <h2 style="margin-bottom:20px;">🔐 Admin Login</h2>
-  <p style="color:#666; margin-bottom:20px;">Enter admin credentials</p>
-
-  <div style="max-width:300px; margin:auto; display:flex; flex-direction:column; gap:12px;">
-
-    <input id="email" type="email" placeholder="Email" style="
-      padding:12px;
-      border-radius:10px;
-      border:1px solid #ccc;
-      font-size:16px;
-    ">
-
-    <input id="code" type="password" placeholder="Admin Code" style="
-      padding:12px;
-      border-radius:10px;
-      border:1px solid #ccc;
-      font-size:16px;
-    ">
-
-    <button onclick="loginAdmin()" style="
-      padding:12px;
-      border:none;
-      border-radius:10px;
-      background:#1e88e5;
-      color:white;
-      font-size:16px;
-      cursor:pointer;
-    ">
-      Login
-    </button>
-
-    <button onclick="back()" style="
-      padding:10px;
-      border:none;
-      background:transparent;
-      color:#1565c0;
-      cursor:pointer;
-    ">
-      ← Back
-    </button>
-
-  </div>
-
-</div>
+<div id="adminLogin" class="screen">
   <h3>Admin Login</h3>
-  <input id="email" type="email" placeholder="Email">
-  <input id="code" type="password" placeholder="Admin code">
+  <input id="email" placeholder="Email">
+  <input id="code" type="password" placeholder="Code">
   <button onclick="loginAdmin()">Login</button>
-  <button onclick="back()">Back</button>
 </div>
 
-<!-- ===== ADMIN PANEL ===== -->
 <div id="adminDashboard" class="screen">
   <h3>Admin Panel</h3>
 
-  <input id="name" placeholder="Product name">
-  <input id="price" type="number" placeholder="Price">
+  <input id="name" placeholder="Name">
+  <input id="price" placeholder="Price">
   <input id="image" type="file">
 
-  <button onclick="addProduct()">Add Product</button>
-  <button onclick="logout()">Logout</button>
+  <button onclick="addProduct()">Add</button>
+
+  <div id="adminList"></div>
 </div>
 
-<!-- ===== SHOP ===== -->
 <div id="shop" class="screen">
-  <h3>Products</h3>
-  <div id="productList"></div>
-  <button onclick="logout()">Exit</button>
+  <h3>Shop</h3>
+  <div id="shopList"></div>
 </div>
 
 <script>
-/* ===== DATA ===== */
-let products = JSON.parse(localStorage.getItem("products")) || [];
 
-const admins = ["admin123", "aaa2026", "shopowner"];
+/* ================= DATA ================= */
+let products = JSON.parse(localStorage.getItem("products")) || [];
+const admins = ["admin123", "aaa2026"];
 let isAdmin = false;
 
-/* ===== NAVIGATION ===== */
-function show(screen) {
+/* ================= SPLASH ================= */
+window.onload = function () {
+  setTimeout(() => {
+    document.getElementById("splash").style.display = "none";
+    show("roleScreen");
+  }, 3000);
+};
+
+/* ================= NAV ================= */
+function show(id) {
   document.querySelectorAll(".screen").forEach(s => {
     s.classList.remove("active");
     s.style.display = "none";
   });
 
-  let target = document.getElementById(screen);
-
-  if (target) {
-    target.style.display = "block";
-
-    setTimeout(() => {
-      target.classList.add("active");
-    }, 10);
+  let el = document.getElementById(id);
+  if (el) {
+    el.style.display = "block";
+    setTimeout(() => el.classList.add("active"), 10);
   }
 }
 
-/* ===== ROLE ===== */
+/* ================= MODE ================= */
 function openCustomer() {
-  isAdmin = false;
   show("shop");
-  render();
+  renderShop();
 }
 
 function showAdminLogin() {
   show("adminLogin");
 }
 
-function back() {
-  show("roleScreen");
-}
-
-/* ===== ADMIN LOGIN ===== */
+/* ================= LOGIN ================= */
 function loginAdmin() {
-  let email = document.getElementById("email").value;
   let code = document.getElementById("code").value;
 
   if (admins.includes(code)) {
     isAdmin = true;
-
     show("adminDashboard");
-    render();
-
-    alert("Welcome " + email);
+    renderAdmin();
   } else {
-    alert("Wrong admin code");
+    alert("Wrong code");
   }
 }
 
-/* ===== ADD PRODUCT ===== */
+/* ================= ADD ================= */
 function addProduct() {
   let name = document.getElementById("name").value;
   let price = document.getElementById("price").value;
   let file = document.getElementById("image").files[0];
 
-  if (!name || !price || !file) {
-    alert("Fill all fields");
-    return;
-  }
-
   let reader = new FileReader();
 
   reader.onload = function(e) {
-    products.push({
-  name,
-  price,
-  stock: "In Stock",
-  image: e.target.result
-});
-
+    products.push({ name, price, image: e.target.result });
     save();
-    render();
+    renderAdmin();
+    renderShop();
   };
 
   reader.readAsDataURL(file);
 }
 
-/* ===== EDIT ===== */
-function editProduct(i) {
-  let p = products[i];
-
-  let newName = prompt("Edit name", p.name);
-  let newPrice = prompt("Edit price", p.price);
-
-  if (newName && newPrice) {
-    products[i].name = newName;
-    products[i].price = newPrice;
-    save();
-    render();
-  }
-}
-
-/* ===== DELETE ===== */
-function deleteProduct(i) {
-  if (!confirm("Delete this product?")) return;
-  products.splice(i, 1);
-  save();
-  render();
-}
-  
-function toggleStock(i) {
-  products[i].stock =
-    products[i].stock === "In Stock"
-      ? "Out of Stock"
-      : "In Stock";
-
-  save();
-  render();
-}
-
-
-/* ===== RENDER ===== */
-function render() {
-  let box = document.getElementById("productList") || document.getElementById("shopProductList");
+/* ================= RENDER ================= */
+function renderShop() {
+  let box = document.getElementById("shopList");
   box.innerHTML = "";
 
-  products.forEach((p, i) => {
+  products.forEach(p => {
     box.innerHTML += `
       <div class="card">
         <img src="${p.image}">
         <h3>${p.name}</h3>
         <p class="price">${p.price} Birr</p>
-
-<p style="
-  color:${p.stock === 'In Stock' ? 'green' : 'red'};
-  font-weight:bold;
-">
-  ${p.stock}
-</p>
-
-        ${isAdmin ? `
-          <div class="admin-btns">
-            <button onclick="editProduct(${i})">Edit</button>
-            <button class="delete" onclick="deleteProduct(${i})">Delete</button>
-          </div>
-        ` : ""}
       </div>
     `;
   });
 }
 
-/* ===== SAVE ===== */
+function renderAdmin() {
+  let box = document.getElementById("adminList");
+  box.innerHTML = "";
+
+  products.forEach(p => {
+    box.innerHTML += `
+      <div class="card">
+        <img src="${p.image}">
+        <h3>${p.name}</h3>
+        <p class="price">${p.price}</p>
+      </div>
+    `;
+  });
+}
+
+/* ================= SAVE ================= */
 function save() {
   localStorage.setItem("products", JSON.stringify(products));
 }
 
-/* ===== LOGOUT ===== */
-function logout() {
-  location.reload();
-}
-
-/* ===== INIT ===== */
-show("roleScreen");
-render();
 </script>
 
 </body>
