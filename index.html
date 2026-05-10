@@ -6,7 +6,11 @@
 <title>AAA SHOP</title>
 
 <style>
-body{margin:0;font-family:Arial;background:#f4f6f8;}
+body{
+  margin:0;
+  font-family:Arial;
+  background:#f4f6f8;
+}
 
 header{
   background:#1e88e5;
@@ -15,8 +19,15 @@ header{
   text-align:center;
 }
 
-.screen{display:none;padding:15px;}
-.active{display:block;}
+.screen{
+  display:none;
+  padding:15px;
+  padding-bottom:100px;
+}
+
+.active{
+  display:block;
+}
 
 .card{
   background:white;
@@ -35,6 +46,7 @@ button{
   color:white;
 }
 
+/* NAV */
 .bottom-nav{
   position:fixed;
   bottom:0;
@@ -43,6 +55,7 @@ button{
   display:flex;
   background:white;
   border-top:1px solid #ddd;
+  z-index:999;
 }
 
 .bottom-nav button{
@@ -51,6 +64,16 @@ button{
   color:#1e88e5;
 }
 
+/* CHAT FIX */
+#msg{
+  width:70%;
+}
+
+#sendBtn{
+  width:25%;
+}
+
+/* NOTIFY */
 #notify{
   position:fixed;
   top:10px;
@@ -60,6 +83,7 @@ button{
   padding:10px;
   border-radius:10px;
   display:none;
+  z-index:1000;
 }
 </style>
 </head>
@@ -86,11 +110,11 @@ button{
 
   <div id="list"></div>
 
-  <h3>💬 Public Chat</h3>
+  <h3>💬 Chat</h3>
   <div id="chatBox"></div>
 
-  <input id="msg" placeholder="Write message">
-  <button onclick="sendMsg()">Send</button>
+  <input id="msg" placeholder="Message admin">
+  <button id="sendBtn" onclick="sendMsg()">Send</button>
 </div>
 
 <!-- CART -->
@@ -121,14 +145,15 @@ button{
   <button onclick="placeOrder()">Confirm Order</button>
 </div>
 
-<!-- ADMIN LOGIN -->
+<!-- LOGIN -->
 <div id="login" class="screen">
   <h2>Admin Login</h2>
+
   <input id="pass" placeholder="Password">
   <button onclick="login()">Login</button>
 </div>
 
-<!-- ADMIN PANEL -->
+<!-- ADMIN -->
 <div id="admin" class="screen">
   <h2>Admin Panel</h2>
 
@@ -138,14 +163,16 @@ button{
 
   <button onclick="add()">Add Product</button>
 
-  <h3>📡 Online Users</h3>
+  <h3>👤 Users</h3>
   <div id="usersBox"></div>
 
-  <h3>💬 Chat Monitor</h3>
+  <h3>💬 Chat</h3>
   <div id="adminChat"></div>
 
   <h3>📦 Orders</h3>
   <div id="ordersBox"></div>
+
+  <button onclick="logout()">Logout</button>
 </div>
 
 <!-- NAV -->
@@ -165,6 +192,7 @@ let orders = JSON.parse(localStorage.getItem("orders")) || [];
 let users = JSON.parse(localStorage.getItem("users")) || [];
 
 let currentUser = null;
+let isAdmin = localStorage.getItem("isAdmin") === "true";
 
 /* NAV */
 function show(id){
@@ -182,8 +210,7 @@ function loginUser(){
 
   currentUser = {
     id:Date.now(),
-    name:name,
-    last:Date.now()
+    name:name
   };
 
   users.push(currentUser);
@@ -205,7 +232,7 @@ function render(){
         <h3>${p.name}</h3>
         <p>${p.price}</p>
 
-        <button onclick="addToCart(${i})">🛒 Add</button>
+        <button onclick="addToCart(${i})">Add</button>
       </div>
     `;
   });
@@ -264,10 +291,18 @@ function checkout(){
 }
 
 function placeOrder(){
+
+  let total = 0;
+
+  cart.forEach(p=>{
+    total += p.price * p.qty;
+  });
+
   orders.push({
-    user:currentUser?.name,
-    items:cart,
-    time:new Date().toLocaleString()
+    user: currentUser?.name || "Guest",
+    items: cart,
+    total: total,
+    time: new Date().toLocaleString()
   });
 
   localStorage.setItem("orders",JSON.stringify(orders));
@@ -275,17 +310,27 @@ function placeOrder(){
   cart=[];
   saveCart();
 
-  notify("Order sent ✔");
+  notify("Order placed ✔");
 }
 
 /* ADMIN */
 function login(){
   if(document.getElementById("pass").value==="admin"){
+    isAdmin = true;
+    localStorage.setItem("isAdmin","true");
+
     show("admin");
     renderAdminAll();
   }else alert("Wrong password");
 }
 
+function logout(){
+  localStorage.removeItem("isAdmin");
+  isAdmin=false;
+  show("home");
+}
+
+/* ADD PRODUCT */
 function add(){
   let name=document.getElementById("name").value;
   let price=document.getElementById("price").value;
@@ -305,13 +350,13 @@ function add(){
 /* CHAT */
 function sendMsg(){
   messages.push({
-    user:currentUser.name,
+    user:currentUser?.name || "Guest",
     text:document.getElementById("msg").value
   });
 
   localStorage.setItem("messages",JSON.stringify(messages));
-  renderChat();
 
+  renderChat();
   notify("New message 💬");
 }
 
@@ -338,10 +383,17 @@ function renderAdminAll(){
     messages.map(m=>`<div class="card"><b>${m.user}</b>: ${m.text}</div>`).join("");
 
   document.getElementById("ordersBox").innerHTML =
-    orders.map(o=>`<div class="card">${o.user} - ${o.time}</div>`).join("");
+    orders.map(o=>`
+      <div class="card">
+        <b>${o.user}</b><br>
+        Items: ${o.items.length}<br>
+        Total: ${o.total} Birr<br>
+        Time: ${o.time}
+      </div>
+    `).join("");
 }
 
-/* NOTIFICATION */
+/* NOTIFY */
 function notify(text){
   let n=document.getElementById("notify");
   n.innerText=text;
@@ -351,7 +403,13 @@ function notify(text){
 }
 
 /* INIT */
-window.onload=()=>show("home");
+window.onload=()=>{
+  if(isAdmin){
+    show("admin");
+  }else{
+    show("home");
+  }
+};
 
 </script>
 
