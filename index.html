@@ -6,8 +6,6 @@
 <title>AAA SHOP</title>
 
 <style>
-
-/* ===== BASIC APP STYLE ===== */
 body{
   margin:0;
   font-family:Arial;
@@ -21,16 +19,9 @@ header{
   text-align:center;
 }
 
-.screen{
-  display:none;
-  padding:15px;
-}
+.screen{display:none;padding:15px;}
+.active{display:block;}
 
-.active{
-  display:block;
-}
-
-/* ===== CARDS ===== */
 .card{
   background:white;
   padding:10px;
@@ -48,7 +39,20 @@ button{
   color:white;
 }
 
-/* ===== BOTTOM NAV ===== */
+/* POPUP */
+#popup{
+  position:fixed;
+  bottom:100px;
+  left:50%;
+  transform:translateX(-50%);
+  background:#1e88e5;
+  color:white;
+  padding:10px 20px;
+  border-radius:20px;
+  display:none;
+}
+
+/* NAV */
 .bottom-nav{
   position:fixed;
   bottom:0;
@@ -64,26 +68,52 @@ button{
   background:none;
   color:#1e88e5;
 }
-
 </style>
 </head>
 
 <body>
 
-<header>AAA SHOP ETHIOPIA</header>
+<header>AAA SHOP</header>
 
-<!-- ================= SCREENS ================= -->
-
+<!-- HOME -->
 <div id="home" class="screen active">
   <h2>Welcome 👋</h2>
   <button onclick="openShop()">Start Shopping</button>
 </div>
 
+<!-- SHOP -->
 <div id="shop" class="screen">
   <h2>Shop</h2>
   <div id="list"></div>
 </div>
 
+<!-- CART -->
+<div id="cart" class="screen">
+  <h2>🛒 Cart</h2>
+  <div id="cartList"></div>
+  <h3 id="total"></h3>
+  <button onclick="clearCart()">Clear Cart</button>
+  <button onclick="show('checkout')">Checkout</button>
+</div>
+
+<!-- CHECKOUT -->
+<div id="checkout" class="screen">
+  <h2>Checkout 💳</h2>
+
+  <div class="card">
+    <h3>Telebirr</h3>
+    <p>09******</p>
+  </div>
+
+  <div class="card">
+    <h3>CBE</h3>
+    <p>1000*******</p>
+  </div>
+
+  <button onclick="alert('Order placed!')">Confirm Order</button>
+</div>
+
+<!-- LOGIN -->
 <div id="login" class="screen">
   <h2>Login</h2>
   <input id="email" placeholder="Email">
@@ -91,132 +121,37 @@ button{
   <button onclick="login()">Login</button>
 </div>
 
-<div id="admin" class="screen">
-  <h2>Admin Panel</h2>
-  <input id="name" placeholder="Name">
-  <input id="price" placeholder="Price">
-  <input id="cat" placeholder="Category">
-  <input id="img" type="file">
-  <button onclick="add()">Add Product</button>
-</div>
+<!-- POPUP -->
+<div id="popup">Added to cart 🛒</div>
 
-<div id="order" class="screen">
-  <h2>Order</h2>
-  <p id="orderInfo"></p>
-</div>
-
-<!-- ABOUT -->
-<div id="about" class="screen">
-  <h2>About AAA SHOP</h2>
-  <p>AAA SHOP is a modern Ethiopian online store built for fast and simple shopping experience.</p>
-</div>
-
-<!-- CONTACT -->
-<div id="contact" class="screen">
-  <h2>Contact Us</h2>
-  <p>Email: aaashop@gmail.com</p>
-  <p>Phone: +251 900 000 000</p>
-</div>
-
-<!-- ================= NAV ================= -->
+<!-- NAV -->
 <div class="bottom-nav">
-  <button onclick="showHome()">🏠</button>
+  <button onclick="show('home')">🏠</button>
   <button onclick="openShop()">🛍</button>
-  <button onclick="showLogin()">👤</button>
-  <button onclick="show('about')">ℹ️</button>
-  <button onclick="show('contact')">📞</button>
+  <button onclick="show('cart')">🛒</button>
 </div>
 
-<!-- ================= SCRIPT ================= -->
 <script>
 
+/* DATA */
 let products = JSON.parse(localStorage.getItem("products")) || [];
-let users = JSON.parse(localStorage.getItem("users")) || [];
-let currentUser = JSON.parse(localStorage.getItem("currentUser")) || null;
 let cart = JSON.parse(localStorage.getItem("cart")) || [];
-let selected = null;
 
-/* SCREEN SWITCH */
+/* SCREEN */
 function show(id){
   document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
   document.getElementById(id).classList.add("active");
+
+  if(id==="cart") renderCart();
 }
 
-function showHome(){ show("home"); }
-function openShop(){ show("shop"); render(); }
-function showLogin(){ show("login"); }
-document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
-  document.getElementById(id).classList.add("active");
-
-  if(id === "cart"){
-    renderCart();
-  }
+/* SHOP */
+function openShop(){
+  show("shop");
+  render();
 }
 
-/* OTHER FUNCTIONS BELOW */
-/* LOGIN */
-function login(){
-  let email = document.getElementById("email").value;
-  let pass = document.getElementById("pass").value;
-
-  let user = users.find(u=>u.email===email && u.pass===pass);
-
-  if(user){
-    currentUser = user;
-    localStorage.setItem("currentUser", JSON.stringify(user));
-    alert("Welcome " + email);
-    showHome();
-  } else {
-    alert("Wrong login");
-  }
-}
-
-/* ADD PRODUCT */
-function add(){
-  let name = document.getElementById("name").value;
-  let price = document.getElementById("price").value;
-  let cat = document.getElementById("cat").value;
-  let file = document.getElementById("img").files[0];
-
-  let reader = new FileReader();
-
-  reader.onload = function(e){
-    products.push({name,price,cat,img:e.target.result});
-    localStorage.setItem("products", JSON.stringify(products));
-    alert("Product added");
-  }
-
-  reader.readAsDataURL(file);
-}
-
-/* CART */
-function addToCart(i){
-  cart.push(products[i]);
-  localStorage.setItem("cart", JSON.stringify(cart));
-  alert("Added to cart 🛒");
-}
-function renderCart(){
-  let box = document.getElementById("cartList");
-  box.innerHTML = "";
-
-  cart.forEach((p,i)=>{
-    box.innerHTML += `
-      <div class="card">
-        <h3>${p.name}</h3>
-        <p>${p.price} Birr</p>
-      </div>
-    `;
-  });
-}
-/* BUY */
-function buy(i){
-  selected = products[i];
-  document.getElementById("orderInfo").innerText =
-    selected.name + " - " + selected.price;
-  show("order");
-}
-
-/* RENDER */
+/* RENDER SHOP */
 function render(){
   let box = document.getElementById("list");
   box.innerHTML = "";
@@ -224,23 +159,102 @@ function render(){
   products.forEach((p,i)=>{
     box.innerHTML += `
       <div class="card">
-        <img src="${p.img}" width="100%">
         <h3>${p.name}</h3>
         <p>${p.price} Birr</p>
 
         <button onclick="addToCart(${i})">Add to Cart</button>
-        <button onclick="buy(${i})">Buy</button>
       </div>
     `;
   });
 }
 
-window.onload = render;
+/* POPUP */
+function popup(){
+  let p = document.getElementById("popup");
+  p.style.display="block";
+  setTimeout(()=>p.style.display="none",1000);
+}
+
+/* ADD TO CART (WITH QUANTITY) */
+function addToCart(i){
+
+  let found = cart.find(c=>c.name===products[i].name);
+
+  if(found){
+    found.qty++;
+  }else{
+    cart.push({...products[i], qty:1});
+  }
+
+  localStorage.setItem("cart", JSON.stringify(cart));
+
+  popup();
+}
+
+/* CART RENDER */
+function renderCart(){
+  let box = document.getElementById("cartList");
+  let totalBox = document.getElementById("total");
+
+  box.innerHTML = "";
+
+  let total = 0;
+
+  cart.forEach((p,i)=>{
+    total += p.price * p.qty;
+
+    box.innerHTML += `
+      <div class="card">
+        <h3>${p.name}</h3>
+        <p>${p.price} Birr x ${p.qty}</p>
+
+        <button onclick="addQty(${i})">+</button>
+        <button onclick="removeQty(${i})">-</button>
+        <button onclick="removeItem(${i})">Remove</button>
+      </div>
+    `;
+  });
+
+  totalBox.innerText = "Total: " + total + " Birr";
+}
+
+/* QTY + */
+function addQty(i){
+  cart[i].qty++;
+  saveCart();
+}
+
+/* QTY - */
+function removeQty(i){
+  cart[i].qty--;
+  if(cart[i].qty<=0) cart.splice(i,1);
+  saveCart();
+}
+
+/* REMOVE */
+function removeItem(i){
+  cart.splice(i,1);
+  saveCart();
+}
+
+/* CLEAR */
+function clearCart(){
+  cart=[];
+  saveCart();
+}
+
+/* SAVE */
+function saveCart(){
+  localStorage.setItem("cart", JSON.stringify(cart));
+  renderCart();
+}
+
+/* LOGIN SIMPLE */
+function login(){
+  alert("Login system placeholder");
+}
 
 </script>
-<div id="cart" class="screen">
-  <h2>Your Cart 🛒</h2>
-  <div id="cartList"></div>
-</div>
+
 </body>
 </html>
