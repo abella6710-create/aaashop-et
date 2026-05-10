@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,7 +7,13 @@
 
 <style>
 body{margin:0;font-family:Arial;background:#f4f6f8;}
-header{background:#1e88e5;color:white;padding:15px;text-align:center;}
+
+header{
+  background:#1e88e5;
+  color:white;
+  padding:15px;
+  text-align:center;
+}
 
 .screen{display:none;padding:15px;}
 .active{display:block;}
@@ -74,22 +80,26 @@ button{
   <button onclick="show('login')">Admin Login</button>
 </div>
 
-<!-- SHOP (TIKTOK STYLE) -->
+<!-- SHOP -->
 <div id="shop" class="screen">
   <h2>Shop 🛍</h2>
+
   <div id="list"></div>
 
-  <h3>💬 Chat Admin</h3>
+  <h3>💬 Public Chat</h3>
   <div id="chatBox"></div>
-  <input id="msg" placeholder="Message admin">
+
+  <input id="msg" placeholder="Write message">
   <button onclick="sendMsg()">Send</button>
 </div>
 
 <!-- CART -->
 <div id="cart" class="screen">
   <h2>Cart 🛒</h2>
+
   <div id="cartList"></div>
   <h3 id="total"></h3>
+
   <button onclick="clearCart()">Clear</button>
   <button onclick="checkout()">Checkout</button>
 </div>
@@ -111,17 +121,18 @@ button{
   <button onclick="placeOrder()">Confirm Order</button>
 </div>
 
-<!-- ADMIN -->
+<!-- ADMIN LOGIN -->
 <div id="login" class="screen">
   <h2>Admin Login</h2>
   <input id="pass" placeholder="Password">
   <button onclick="login()">Login</button>
 </div>
 
+<!-- ADMIN PANEL -->
 <div id="admin" class="screen">
   <h2>Admin Panel</h2>
 
-  <input id="name" placeholder="Name">
+  <input id="name" placeholder="Product name">
   <input id="price" placeholder="Price">
   <input id="img" type="file">
 
@@ -130,7 +141,7 @@ button{
   <h3>📡 Online Users</h3>
   <div id="usersBox"></div>
 
-  <h3>💬 Messages</h3>
+  <h3>💬 Chat Monitor</h3>
   <div id="adminChat"></div>
 
   <h3>📦 Orders</h3>
@@ -167,12 +178,12 @@ function show(id){
 
 /* USER LOGIN */
 function loginUser(){
-  let name = document.getElementById("username").value;
+  let name=document.getElementById("username").value;
 
   currentUser = {
     id:Date.now(),
     name:name,
-    lastActive:Date.now()
+    last:Date.now()
   };
 
   users.push(currentUser);
@@ -183,17 +194,16 @@ function loginUser(){
   renderChat();
 }
 
-/* SHOP TIKTOK STYLE */
+/* SHOP */
 function render(){
   let box=document.getElementById("list");
   box.innerHTML="";
 
   products.forEach((p,i)=>{
     box.innerHTML+=`
-      <div class="card" style="text-align:center;">
-        <img src="${p.img}" style="width:100%;border-radius:10px;">
-        <h2>${p.name}</h2>
-        <p>${p.price} Birr</p>
+      <div class="card">
+        <h3>${p.name}</h3>
+        <p>${p.price}</p>
 
         <button onclick="addToCart(${i})">🛒 Add</button>
       </div>
@@ -211,7 +221,7 @@ function addToCart(i){
     cart.push({...products[i],qty:1});
   }
 
-  localStorage.setItem("cart",JSON.stringify(cart));
+  saveCart();
   notify("Added to cart 🛒");
 }
 
@@ -265,20 +275,17 @@ function placeOrder(){
   cart=[];
   saveCart();
 
-  notify("Order placed ✔");
+  notify("Order sent ✔");
 }
 
-/* ADMIN LOGIN */
+/* ADMIN */
 function login(){
-  let pass=document.getElementById("pass").value;
-
-  if(pass==="admin"){
+  if(document.getElementById("pass").value==="admin"){
     show("admin");
     renderAdminAll();
-  }else alert("Wrong");
+  }else alert("Wrong password");
 }
 
-/* ADD PRODUCT */
 function add(){
   let name=document.getElementById("name").value;
   let price=document.getElementById("price").value;
@@ -298,12 +305,14 @@ function add(){
 /* CHAT */
 function sendMsg(){
   messages.push({
-    from:currentUser.name,
+    user:currentUser.name,
     text:document.getElementById("msg").value
   });
 
   localStorage.setItem("messages",JSON.stringify(messages));
   renderChat();
+
+  notify("New message 💬");
 }
 
 function renderChat(){
@@ -313,33 +322,23 @@ function renderChat(){
   messages.forEach(m=>{
     box.innerHTML+=`
       <div class="card">
-        <b>${m.from}:</b> ${m.text}
+        <b>${m.user}</b>: ${m.text}
       </div>
     `;
   });
 }
 
-/* ADMIN PANEL ALL */
+/* ADMIN ALL */
 function renderAdminAll(){
 
-  /* USERS */
-  let u=document.getElementById("usersBox");
-  u.innerHTML=users.map(x=>`<div class="card">${x.name}</div>`).join("");
+  document.getElementById("usersBox").innerHTML =
+    users.map(u=>`<div class="card">${u.name}</div>`).join("");
 
-  /* CHAT */
-  let c=document.getElementById("adminChat");
-  c.innerHTML=messages.map(m=>`
-    <div class="card"><b>${m.from}:</b> ${m.text}</div>
-  `).join("");
+  document.getElementById("adminChat").innerHTML =
+    messages.map(m=>`<div class="card"><b>${m.user}</b>: ${m.text}</div>`).join("");
 
-  /* ORDERS */
-  let o=document.getElementById("ordersBox");
-  o.innerHTML=orders.map(o=>`
-    <div class="card">
-      <b>${o.user}</b><br>
-      ${o.time}
-    </div>
-  `).join("");
+  document.getElementById("ordersBox").innerHTML =
+    orders.map(o=>`<div class="card">${o.user} - ${o.time}</div>`).join("");
 }
 
 /* NOTIFICATION */
@@ -348,7 +347,7 @@ function notify(text){
   n.innerText=text;
   n.style.display="block";
 
-  setTimeout(()=>n.style.display="none",1500);
+  setTimeout(()=>n.style.display="none",2000);
 }
 
 /* INIT */
