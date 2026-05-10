@@ -6,28 +6,13 @@
 <title>AAA SHOP</title>
 
 <style>
-body{
-  margin:0;
-  font-family:Arial;
-  background:#f4f6f8;
-}
-
-header{
-  background:#1e88e5;
-  color:white;
-  padding:15px;
-  text-align:center;
-}
+body{margin:0;font-family:Arial;background:#f4f6f8;}
+header{background:#1e88e5;color:white;padding:15px;text-align:center;}
 
 .screen{display:none;padding:15px;}
 .active{display:block;}
 
-.card{
-  background:white;
-  padding:10px;
-  margin:10px 0;
-  border-radius:10px;
-}
+.card{background:white;padding:10px;margin:10px 0;border-radius:10px;}
 
 button{
   width:100%;
@@ -39,20 +24,6 @@ button{
   color:white;
 }
 
-/* POPUP */
-#popup{
-  position:fixed;
-  bottom:100px;
-  left:50%;
-  transform:translateX(-50%);
-  background:#1e88e5;
-  color:white;
-  padding:10px 20px;
-  border-radius:20px;
-  display:none;
-}
-
-/* NAV */
 .bottom-nav{
   position:fixed;
   bottom:0;
@@ -68,31 +39,50 @@ button{
   background:none;
   color:#1e88e5;
 }
+
+/* popup */
+#popup{
+  position:fixed;
+  bottom:90px;
+  left:50%;
+  transform:translateX(-50%);
+  background:#1e88e5;
+  color:white;
+  padding:10px;
+  border-radius:20px;
+  display:none;
+}
 </style>
 </head>
 
 <body>
 
-<header>AAA SHOP</header>
+<header>AAA SHOP ETHIOPIA</header>
 
 <!-- HOME -->
 <div id="home" class="screen active">
   <h2>Welcome 👋</h2>
   <button onclick="openShop()">Start Shopping</button>
+  <button onclick="show('login')">Admin Login</button>
 </div>
 
 <!-- SHOP -->
 <div id="shop" class="screen">
   <h2>Shop</h2>
   <div id="list"></div>
+
+  <h3>💬 Message Admin</h3>
+  <div id="chatBox"></div>
+  <input id="msg" placeholder="Message admin">
+  <button onclick="sendMsg()">Send</button>
 </div>
 
 <!-- CART -->
 <div id="cart" class="screen">
-  <h2>🛒 Cart</h2>
+  <h2>Cart 🛒</h2>
   <div id="cartList"></div>
   <h3 id="total"></h3>
-  <button onclick="clearCart()">Clear Cart</button>
+  <button onclick="clearCart()">Clear</button>
   <button onclick="show('checkout')">Checkout</button>
 </div>
 
@@ -110,15 +100,35 @@ button{
     <p>1000*******</p>
   </div>
 
-  <button onclick="alert('Order placed!')">Confirm Order</button>
+  <button onclick="alert('Order sent ✔')">Confirm Order</button>
 </div>
 
 <!-- LOGIN -->
 <div id="login" class="screen">
-  <h2>Login</h2>
-  <input id="email" placeholder="Email">
+  <h2>Admin Login</h2>
   <input id="pass" placeholder="Password">
   <button onclick="login()">Login</button>
+</div>
+
+<!-- ADMIN -->
+<div id="admin" class="screen">
+  <h2>Admin Panel</h2>
+
+  <input id="name" placeholder="Name">
+  <input id="price" placeholder="Price">
+  <input id="cat" placeholder="Category">
+  <input id="img" type="file">
+
+  <button onclick="add()">Add Product</button>
+
+  <h3>Messages</h3>
+  <div id="adminChat"></div>
+
+  <input id="reply" placeholder="Reply">
+  <button onclick="replyMsg()">Send Reply</button>
+
+  <h3>Products</h3>
+  <div id="adminList"></div>
 </div>
 
 <!-- POPUP -->
@@ -136,6 +146,7 @@ button{
 /* DATA */
 let products = JSON.parse(localStorage.getItem("products")) || [];
 let cart = JSON.parse(localStorage.getItem("cart")) || [];
+let messages = JSON.parse(localStorage.getItem("messages")) || [];
 
 /* SCREEN */
 function show(id){
@@ -143,24 +154,45 @@ function show(id){
   document.getElementById(id).classList.add("active");
 
   if(id==="cart") renderCart();
+  if(id==="shop") renderChat();
 }
 
 /* SHOP */
 function openShop(){
   show("shop");
   render();
+  renderChat();
+}
+
+/* PRODUCTS */
+function add(){
+  let name=document.getElementById("name").value;
+  let price=document.getElementById("price").value;
+  let cat=document.getElementById("cat").value;
+  let file=document.getElementById("img").files[0];
+
+  let reader=new FileReader();
+
+  reader.onload=function(e){
+    products.push({name,price,cat,img:e.target.result});
+    localStorage.setItem("products",JSON.stringify(products));
+    render();
+  };
+
+  reader.readAsDataURL(file);
 }
 
 /* RENDER SHOP */
 function render(){
-  let box = document.getElementById("list");
-  box.innerHTML = "";
+  let box=document.getElementById("list");
+  box.innerHTML="";
 
   products.forEach((p,i)=>{
-    box.innerHTML += `
+    box.innerHTML+=`
       <div class="card">
+        <img src="${p.img}" width="100%">
         <h3>${p.name}</h3>
-        <p>${p.price} Birr</p>
+        <p>${p.price}</p>
 
         <button onclick="addToCart(${i})">Add to Cart</button>
       </div>
@@ -168,45 +200,34 @@ function render(){
   });
 }
 
-/* POPUP */
-function popup(){
-  let p = document.getElementById("popup");
-  p.style.display="block";
-  setTimeout(()=>p.style.display="none",1000);
-}
-
-/* ADD TO CART (WITH QUANTITY) */
+/* CART */
 function addToCart(i){
-
   let found = cart.find(c=>c.name===products[i].name);
 
   if(found){
     found.qty++;
   }else{
-    cart.push({...products[i], qty:1});
+    cart.push({...products[i],qty:1});
   }
 
-  localStorage.setItem("cart", JSON.stringify(cart));
-
+  localStorage.setItem("cart",JSON.stringify(cart));
   popup();
 }
 
-/* CART RENDER */
 function renderCart(){
-  let box = document.getElementById("cartList");
-  let totalBox = document.getElementById("total");
+  let box=document.getElementById("cartList");
+  let totalBox=document.getElementById("total");
 
-  box.innerHTML = "";
-
-  let total = 0;
+  box.innerHTML="";
+  let total=0;
 
   cart.forEach((p,i)=>{
-    total += p.price * p.qty;
+    total+=p.price*p.qty;
 
-    box.innerHTML += `
+    box.innerHTML+=`
       <div class="card">
         <h3>${p.name}</h3>
-        <p>${p.price} Birr x ${p.qty}</p>
+        <p>${p.price} x ${p.qty}</p>
 
         <button onclick="addQty(${i})">+</button>
         <button onclick="removeQty(${i})">-</button>
@@ -215,44 +236,101 @@ function renderCart(){
     `;
   });
 
-  totalBox.innerText = "Total: " + total + " Birr";
+  totalBox.innerText="Total: "+total+" Birr";
 }
 
-/* QTY + */
-function addQty(i){
-  cart[i].qty++;
-  saveCart();
-}
+function addQty(i){cart[i].qty++;saveCart();}
+function removeQty(i){cart[i].qty--;if(cart[i].qty<=0)cart.splice(i,1);saveCart();}
+function removeItem(i){cart.splice(i,1);saveCart();}
+function clearCart(){cart=[];saveCart();}
 
-/* QTY - */
-function removeQty(i){
-  cart[i].qty--;
-  if(cart[i].qty<=0) cart.splice(i,1);
-  saveCart();
-}
-
-/* REMOVE */
-function removeItem(i){
-  cart.splice(i,1);
-  saveCart();
-}
-
-/* CLEAR */
-function clearCart(){
-  cart=[];
-  saveCart();
-}
-
-/* SAVE */
 function saveCart(){
-  localStorage.setItem("cart", JSON.stringify(cart));
+  localStorage.setItem("cart",JSON.stringify(cart));
   renderCart();
 }
 
-/* LOGIN SIMPLE */
-function login(){
-  alert("Login system placeholder");
+/* POPUP */
+function popup(){
+  let p=document.getElementById("popup");
+  p.style.display="block";
+  setTimeout(()=>p.style.display="none",1000);
 }
+
+/* LOGIN */
+function login(){
+  if(document.getElementById("pass").value==="admin"){
+    show("admin");
+    renderAdmin();
+    renderAdminChat();
+  }else alert("Wrong");
+}
+
+/* ADMIN */
+function renderAdmin(){
+  let box=document.getElementById("adminList");
+  box.innerHTML="";
+
+  products.forEach((p,i)=>{
+    box.innerHTML+=`
+      <div class="card">
+        <h3>${p.name}</h3>
+        <button onclick="del(${i})">Delete</button>
+      </div>
+    `;
+  });
+}
+
+function del(i){
+  products.splice(i,1);
+  localStorage.setItem("products",JSON.stringify(products));
+  render();
+  renderAdmin();
+}
+
+/* CHAT */
+function sendMsg(){
+  let t=document.getElementById("msg").value;
+  messages.push({from:"user",text:t});
+  localStorage.setItem("messages",JSON.stringify(messages));
+  renderChat();
+}
+
+function replyMsg(){
+  let t=document.getElementById("reply").value;
+  messages.push({from:"admin",text:t});
+  localStorage.setItem("messages",JSON.stringify(messages));
+  renderChat();
+  renderAdminChat();
+}
+
+function renderChat(){
+  let box=document.getElementById("chatBox");
+  box.innerHTML="";
+
+  messages.forEach(m=>{
+    box.innerHTML+=`
+      <div style="background:${m.from==='admin'?'#c8e6c9':'#e3f2fd'};padding:5px;margin:5px;border-radius:8px;">
+        ${m.from}: ${m.text}
+      </div>
+    `;
+  });
+}
+
+function renderAdminChat(){
+  let box=document.getElementById("adminChat");
+  box.innerHTML="";
+
+  messages.forEach(m=>{
+    box.innerHTML+=`
+      <div style="background:${m.from==='admin'?'#c8e6c9':'#e3f2fd'};padding:5px;margin:5px;border-radius:8px;">
+        ${m.from}: ${m.text}
+      </div>
+    `;
+  });
+}
+
+/* INIT */
+window.onload=render;
 
 </script>
 
