@@ -1,202 +1,173 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>AAA SHOP Ethiopia - Online Store</title>
+<title>AAA SHOP Ethiopia</title>
 
-  <meta name="description" content="AAA SHOP Ethiopia is a modern online store where you can buy products easily.">
-  <meta name="keywords" content="AAA SHOP, Ethiopia shop, online store Ethiopia">
-  <meta name="robots" content="index, follow">
+<meta name="theme-color" content="#1e88e5">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="logo.png">
 
-  <!-- PWA -->
-  <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#1e88e5">
+<style>
+body{
+  margin:0;
+  font-family:Arial;
+  background:#f4f6f8;
+  color:#222;
+}
 
-  <!-- ICON -->
-  <link rel="icon" href="logo.png">
+header{
+  background:#1e88e5;
+  color:white;
+  padding:15px;
+  text-align:center;
+}
 
-  <style>
+.screen{
+  display:none;
+  padding:15px;
+}
 
-  /* ================= BASE ================= */
-  body {
-    margin: 0;
-    font-family: Arial, sans-serif;
-    background: #f4f6f8;
-    color: #222;
-  }
+.screen.active{
+  display:block;
+}
 
-  /* ================= HEADER ================= */
-  header {
-    background: linear-gradient(135deg, #1e88e5, #1565c0);
-    color: white;
-    text-align: center;
-    padding: 18px;
-  }
+button{
+  width:100%;
+  padding:12px;
+  margin:6px 0;
+  border:none;
+  border-radius:10px;
+  background:#1e88e5;
+  color:white;
+  font-weight:bold;
+  cursor:pointer;
+}
 
-  /* ================= INPUTS ================= */
-  input {
-    width: 100%;
-    padding: 12px;
-    margin: 6px 0;
-    border-radius: 10px;
-    border: 1px solid #ccc;
-    font-size: 16px;
-  }
+button:hover{
+  background:#1565c0;
+}
 
-  /* ================= BUTTONS ================= */
-  button {
-    width: 100%;
-    padding: 12px;
-    margin: 6px 0;
-    border-radius: 10px;
-    border: none;
-    background: #1e88e5;
-    color: white;
-    font-weight: bold;
-    font-size: 16px;
-    cursor: pointer;
-    transition: 0.2s;
-  }
+input{
+  width:100%;
+  padding:12px;
+  margin:6px 0;
+  border-radius:10px;
+  border:1px solid #ccc;
+}
 
-  button:hover {
-    background: #1565c0;
-  }
+.card{
+  background:white;
+  padding:12px;
+  margin:10px 0;
+  border-radius:12px;
+  box-shadow:0 4px 10px rgba(0,0,0,0.1);
+}
 
-  /* ================= SCREENS ================= */
-  .screen {
-    display: none;
-    opacity: 0;
-    transform: translateY(10px);
-    transition: 0.3s ease;
-  }
+.card img{
+  width:100%;
+  height:180px;
+  object-fit:cover;
+  border-radius:10px;
+}
 
-  .screen.active {
-    display: block;
-    opacity: 1;
-    transform: translateY(0);
-  }
+.price{
+  color:#1e88e5;
+  font-weight:bold;
+}
 
-  /* ================= CARD ================= */
-  .card {
-    background: white;
-    padding: 12px;
-    margin: 10px 0;
-    border-radius: 12px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-  }
+/* bottom nav */
+.bottom-nav{
+  position:fixed;
+  bottom:0;
+  left:0;
+  right:0;
+  display:flex;
+  background:white;
+  box-shadow:0 -3px 10px rgba(0,0,0,0.1);
+}
 
-  .card img {
-    width: 100%;
-    height: 180px;
-    object-fit: cover;
-    border-radius: 10px;
-  }
-
-  .price {
-    color: #1e88e5;
-    font-weight: bold;
-  }
-
-  /* ================= BOTTOM NAV ================= */
-  .bottom-nav {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background: white;
-    display: flex;
-    justify-content: space-around;
-    padding: 10px 0;
-    box-shadow: 0 -3px 12px rgba(0,0,0,0.1);
-  }
-
-  .bottom-nav button {
-    background: none;
-    color: #666;
-    width: auto;
-    font-size: 14px;
-  }
-
-  </style>
+.bottom-nav button{
+  width:33%;
+  background:none;
+  color:#555;
+  font-size:14px;
+}
+</style>
 </head>
 
 <body>
 
-<!-- ================= HEADER ================= -->
 <header>AAA SHOP</header>
 
-<!-- ================= SCREENS ================= -->
-<div id="roleScreen" class="screen active">
+<!-- SCREENS -->
+<div id="home" class="screen active">
   <h2>Welcome</h2>
-  <button onclick="openCustomer()">🛒 Customer</button>
-  <button onclick="showAdminLogin()">🔐 Admin</button>
-</div>
-
-<div id="adminLogin" class="screen">
-  <h3>Admin Login</h3>
-  <input id="code" type="password" placeholder="Enter Code">
-  <button onclick="loginAdmin()">Login</button>
-</div>
-
-<div id="adminDashboard" class="screen">
-  <h3>Admin Panel</h3>
-  <input id="name" placeholder="Product Name">
-  <input id="price" placeholder="Price">
-  <input id="image" type="file">
-  <button onclick="addProduct()">Add Product</button>
-  <div id="adminList"></div>
+  <button onclick="openShop()">🛍 Shop</button>
+  <button onclick="openAdmin()">⚙ Admin</button>
 </div>
 
 <div id="shop" class="screen">
-  <h3>Shop</h3>
+  <h2>Shop</h2>
   <div id="shopList"></div>
 </div>
 
-<!-- ================= BOTTOM NAV ================= -->
-<div class="bottom-nav">
-  <button onclick="goHome()">🏠 Home</button>
-  <button onclick="openCustomer()">🛍 Shop</button>
-  <button onclick="showAdminLogin()">⚙ Admin</button>
+<div id="adminLogin" class="screen">
+  <h2>Admin Login</h2>
+  <input id="adminCode" type="password" placeholder="Enter code">
+  <button onclick="login()">Login</button>
 </div>
 
-<!-- ================= SCRIPT ================= -->
+<div id="adminPanel" class="screen">
+  <h2>Admin Panel</h2>
+
+  <input id="name" placeholder="Product Name">
+  <input id="price" placeholder="Price">
+  <input id="image" type="file">
+
+  <button onclick="addProduct()">Add Product</button>
+
+  <div id="adminList"></div>
+</div>
+
+<!-- BOTTOM NAV -->
+<div class="bottom-nav">
+  <button onclick="goHome()">Home</button>
+  <button onclick="openShop()">Shop</button>
+  <button onclick="openAdmin()">Admin</button>
+</div>
+
 <script>
 
 let products = JSON.parse(localStorage.getItem("products")) || [];
-const admins = ["admin123", "aaa2026"];
+const adminCode = "admin123";
 
 /* NAV */
-function show(id) {
-  document.querySelectorAll(".screen").forEach(s => {
+function show(id){
+  let screens = document.querySelectorAll(".screen");
+
+  screens.forEach(s=>{
     s.classList.remove("active");
-    s.style.display = "none";
   });
 
   let el = document.getElementById(id);
-  el.style.display = "block";
-  setTimeout(() => el.classList.add("active"), 50);
+  if(el){
+    el.classList.add("active");
+  }
 }
 
-function goHome() {
-  show("roleScreen");
-}
-
-function openCustomer() {
-  show("shop");
-  renderShop();
-}
-
-function showAdminLogin() {
-  show("adminLogin");
-}
+function goHome(){ show("home"); }
+function openShop(){ show("shop"); renderShop(); }
+function openAdmin(){ show("adminLogin"); }
 
 /* LOGIN */
-function loginAdmin() {
-  let code = document.getElementById("code").value;
-  if (admins.includes(code)) {
-    show("adminDashboard");
+function login(){
+  let code = document.getElementById("adminCode").value;
+
+  if(code === adminCode){
+    show("adminPanel");
     renderAdmin();
   } else {
     alert("Wrong code");
@@ -204,140 +175,23 @@ function loginAdmin() {
 }
 
 /* ADD PRODUCT */
-function addProduct() {
+function addProduct(){
   let name = document.getElementById("name").value;
   let price = document.getElementById("price").value;
   let file = document.getElementById("image").files[0];
 
-  let reader = new FileReader();
-  reader.onload = function(e) {
-    products.push({ name, price, image: e.target.result });
-    localStorage.setItem("products", JSON.stringify(products));
-    renderShop();
-    renderAdmin();
-  };
-  reader.readAsDataURL(file);
-}
-
-/* RENDER */
-function renderShop() {
-  let box = document.getElementById("shopList");
-  box.innerHTML = "";
-  products.forEach(p => {
-    box.innerHTML += `
-      <div class="card">
-        <img src="${p.image}">
-        <h3>${p.name}</h3>
-        <p class="price">${p.price} Birr</p>
-      </div>
-    `;
-  });
-}
-
-function renderAdmin() {
-  let box = document.getElementById("adminList");
-  box.innerHTML = "";
-  products.forEach(p => {
-    box.innerHTML += `
-      <div class="card">
-        <h3>${p.name}</h3>
-        <p>${p.price}</p>
-      </div>
-    `;
-  });
-}
-
-/* INIT */
-window.onload = function () {
-  show("roleScreen");
-};
-
-/* SERVICE WORKER */
-if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("sw.js");
-}
-
-let products = JSON.parse(localStorage.getItem("products")) || [];
-const admins = ["admin123", "aaa2026"];
-
-/* ALL YOUR EXISTING FUNCTIONS ABOVE... */
-
-/* ================= PWA INSTALL BUTTON ================= */
-let deferredPrompt;
-
-window.addEventListener("beforeinstallprompt", (e) => {
-  e.preventDefault();
-  deferredPrompt = e;
-
-  showInstallButton();
-});
-
-function showInstallButton() {
-  let btn = document.createElement("button");
-  btn.innerText = "📲 Install AAA SHOP";
-<!-- ================= SCRIPT ================= -->
-<script>
-
-let products = JSON.parse(localStorage.getItem("products")) || [];
-const admins = ["admin123", "aaa2026"];
-
-/* ================= NAV SYSTEM ================= */
-function show(id) {
-  document.querySelectorAll(".screen").forEach(s => {
-    s.classList.remove("active");
-    s.style.display = "none";
-  });
-
-  const el = document.getElementById(id);
-  if (el) {
-    el.style.display = "block";
-    setTimeout(() => el.classList.add("active"), 50);
-  }
-}
-
-function goHome() {
-  show("roleScreen");
-}
-
-function openCustomer() {
-  show("shop");
-  renderShop();
-}
-
-function showAdminLogin() {
-  show("adminLogin");
-}
-
-/* ================= LOGIN ================= */
-function loginAdmin() {
-  let code = document.getElementById("code").value;
-
-  if (admins.includes(code)) {
-    show("adminDashboard");
-    renderAdmin();
-  } else {
-    alert("Wrong code");
-  }
-}
-
-/* ================= ADD PRODUCT ================= */
-function addProduct() {
-  let name = document.getElementById("name").value;
-  let price = document.getElementById("price").value;
-  let file = document.getElementById("image").files[0];
-
-  if (!file) {
-    alert("Please select an image");
+  if(!name || !price || !file){
+    alert("Fill all fields");
     return;
   }
 
   let reader = new FileReader();
 
-  reader.onload = function(e) {
+  reader.onload = function(e){
     products.push({
-      name: name,
-      price: price,
-      image: e.target.result
+      name:name,
+      price:price,
+      image:e.target.result
     });
 
     localStorage.setItem("products", JSON.stringify(products));
@@ -349,12 +203,14 @@ function addProduct() {
   reader.readAsDataURL(file);
 }
 
-/* ================= RENDER SHOP ================= */
-function renderShop() {
+/* SHOP */
+function renderShop(){
   let box = document.getElementById("shopList");
+  if(!box) return;
+
   box.innerHTML = "";
 
-  products.forEach(p => {
+  products.forEach(p=>{
     box.innerHTML += `
       <div class="card">
         <img src="${p.image}">
@@ -365,75 +221,76 @@ function renderShop() {
   });
 }
 
-/* ================= RENDER ADMIN ================= */
-function renderAdmin() {
+/* ADMIN */
+function renderAdmin(){
   let box = document.getElementById("adminList");
+  if(!box) return;
+
   box.innerHTML = "";
 
-  products.forEach((p, index) => {
+  products.forEach((p,i)=>{
     box.innerHTML += `
       <div class="card">
         <h3>${p.name}</h3>
-        <p>${p.price} Birr</p>
-        <button onclick="deleteProduct(${index})">Delete</button>
+        <p>${p.price}</p>
+        <button onclick="deleteProduct(${i})">Delete</button>
       </div>
     `;
   });
 }
 
-/* ================= DELETE PRODUCT ================= */
-function deleteProduct(index) {
-  products.splice(index, 1);
+/* DELETE */
+function deleteProduct(i){
+  products.splice(i,1);
   localStorage.setItem("products", JSON.stringify(products));
   renderShop();
   renderAdmin();
 }
 
-/* ================= INIT ================= */
-window.onload = function () {
-  show("roleScreen");
+/* INIT */
+window.onload = function(){
+  show("home");
   renderShop();
 };
 
-/* ================= SERVICE WORKER ================= */
-if ("serviceWorker" in navigator) {
+/* SERVICE WORKER */
+if("serviceWorker" in navigator){
   navigator.serviceWorker.register("sw.js")
-    .then(() => console.log("Service Worker registered"))
-    .catch(err => console.log("SW error:", err));
+  .catch(err => console.log("SW error:", err));
 }
 
-/* ================= PWA INSTALL BUTTON ================= */
+/* PWA INSTALL */
 let deferredPrompt;
 
-window.addEventListener("beforeinstallprompt", (e) => {
+window.addEventListener("beforeinstallprompt",(e)=>{
   e.preventDefault();
   deferredPrompt = e;
-
-  showInstallButton();
+  showInstall();
 });
 
-function showInstallButton() {
-  const btn = document.createElement("button");
+function showInstall(){
+  let btn = document.createElement("button");
 
   btn.innerText = "📲 Install AAA SHOP";
 
-  btn.style.position = "fixed";
-  btn.style.bottom = "80px";
-  btn.style.right = "15px";
-  btn.style.background = "#1e88e5";
-  btn.style.color = "white";
-  btn.style.border = "none";
-  btn.style.padding = "12px";
-  btn.style.borderRadius = "10px";
-  btn.style.zIndex = "9999";
-  btn.style.fontSize = "14px";
+  Object.assign(btn.style,{
+    position:"fixed",
+    bottom:"80px",
+    right:"15px",
+    background:"#1e88e5",
+    color:"white",
+    border:"none",
+    padding:"12px",
+    borderRadius:"10px",
+    zIndex:"9999"
+  });
 
   document.body.appendChild(btn);
 
-  btn.onclick = async function () {
+  btn.onclick = async function(){
     btn.remove();
 
-    if (deferredPrompt) {
+    if(deferredPrompt){
       deferredPrompt.prompt();
       await deferredPrompt.userChoice;
       deferredPrompt = null;
@@ -442,10 +299,6 @@ function showInstallButton() {
 }
 
 </script>
-<div class="bottom-nav">
-  <button onclick="goHome()">🏠 Home</button>
-  <button onclick="openCustomer()">🛍 Shop</button>
-  <button onclick="showAdminLogin()">⚙ Admin</button>
-</div>
+
 </body>
 </html>
