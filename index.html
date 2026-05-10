@@ -6,94 +6,66 @@
 
 <title>AAA SHOP Ethiopia</title>
 
-<meta name="theme-color" content="#1e88e5">
 <link rel="manifest" href="manifest.json">
-<link rel="icon" href="logo.png">
+<meta name="theme-color" content="#1e88e5">
 
 <style>
-body{
-  margin:0;
-  font-family:Arial;
-  background:#f4f6f8;
-  color:#222;
-}
+body { margin:0; font-family:Arial; background:#f4f6f8; }
 
-header{
+header {
   background:#1e88e5;
   color:white;
-  padding:15px;
   text-align:center;
-}
-
-.screen{
-  display:none;
   padding:15px;
 }
 
-.screen.active{
-  display:block;
+/* NAV */
+.nav {
+  display:flex;
+  gap:5px;
+  padding:10px;
 }
 
-button{
+input, select, button {
+  padding:10px;
+  margin:5px 0;
   width:100%;
-  padding:12px;
-  margin:6px 0;
+  border-radius:8px;
   border:none;
-  border-radius:10px;
+}
+
+button {
   background:#1e88e5;
   color:white;
   font-weight:bold;
-  cursor:pointer;
 }
 
-button:hover{
-  background:#1565c0;
-}
+/* SCREEN */
+.screen { display:none; padding:10px; }
+.active { display:block; }
 
-input{
-  width:100%;
-  padding:12px;
-  margin:6px 0;
-  border-radius:10px;
-  border:1px solid #ccc;
-}
-
-.card{
+/* CARD */
+.card {
   background:white;
-  padding:12px;
+  padding:10px;
   margin:10px 0;
-  border-radius:12px;
-  box-shadow:0 4px 10px rgba(0,0,0,0.1);
-}
-
-.card img{
-  width:100%;
-  height:180px;
-  object-fit:cover;
   border-radius:10px;
 }
 
-.price{
-  color:#1e88e5;
-  font-weight:bold;
+.card img {
+  width:100%;
+  border-radius:10px;
 }
 
-/* bottom nav */
-.bottom-nav{
-  position:fixed;
-  bottom:0;
-  left:0;
-  right:0;
+.deleteBtn {
+  background:red;
+  margin-top:5px;
+}
+
+/* TOP BAR */
+.topbar {
   display:flex;
-  background:white;
-  box-shadow:0 -3px 10px rgba(0,0,0,0.1);
-}
-
-.bottom-nav button{
-  width:33%;
-  background:none;
-  color:#555;
-  font-size:14px;
+  gap:5px;
 }
 </style>
 </head>
@@ -102,202 +74,167 @@ input{
 
 <header>AAA SHOP</header>
 
-<!-- SCREENS -->
-<div id="home" class="screen active">
-  <h2>Welcome</h2>
-  <button onclick="openShop()">🛍 Shop</button>
-  <button onclick="openAdmin()">⚙ Admin</button>
-</div>
-
-<div id="shop" class="screen">
-  <h2>Shop</h2>
-  <div id="shopList"></div>
-</div>
-
-<div id="adminLogin" class="screen">
-  <h2>Admin Login</h2>
-  <input id="adminCode" type="password" placeholder="Enter code">
+<!-- ================= LOGIN ================= -->
+<div id="login" class="screen active">
+  <h3>Admin Login</h3>
+  <input id="pass" type="password" placeholder="Enter password">
   <button onclick="login()">Login</button>
 </div>
 
-<div id="adminPanel" class="screen">
-  <h2>Admin Panel</h2>
+<!-- ================= SHOP ================= -->
+<div id="shop" class="screen">
 
-  <input id="name" placeholder="Product Name">
+  <!-- SEARCH + CATEGORY -->
+  <input id="search" onkeyup="render()" placeholder="Search products...">
+
+  <select id="category" onchange="render()">
+    <option value="all">All</option>
+    <option value="food">Food</option>
+    <option value="phone">Phones</option>
+    <option value="tv">TV</option>
+  </select>
+
+  <div id="list"></div>
+</div>
+
+<!-- ================= ADMIN ================= -->
+<div id="admin" class="screen">
+
+  <h3>Add Product</h3>
+
+  <input id="name" placeholder="Name">
   <input id="price" placeholder="Price">
-  <input id="image" type="file">
 
-  <button onclick="addProduct()">Add Product</button>
+  <select id="cat">
+    <option value="food">Food</option>
+    <option value="phone">Phone</option>
+    <option value="tv">TV</option>
+  </select>
+
+  <input id="img" type="file">
+
+  <button onclick="add()">Add</button>
 
   <div id="adminList"></div>
 </div>
 
-<!-- BOTTOM NAV -->
-<div class="bottom-nav">
-  <button onclick="goHome()">Home</button>
-  <button onclick="openShop()">Shop</button>
-  <button onclick="openAdmin()">Admin</button>
+<!-- ================= ORDER ================= -->
+<div id="order" class="screen">
+  <h3>Order Checkout</h3>
+
+  <p id="orderInfo"></p>
+
+  <h4>Choose Payment</h4>
+
+  <button>Telebirr (09******)</button>
+  <button>CBE (1000*******)</button>
+
+  <button onclick="back()">Back</button>
 </div>
 
 <script>
-
-let products = JSON.parse(localStorage.getItem("products")) || [];
-const adminCode = "admin123";
-
-/* NAV */
-function show(id){
-  let screens = document.querySelectorAll(".screen");
-
-  screens.forEach(s=>{
-    s.classList.remove("active");
-  });
-
-  let el = document.getElementById(id);
-  if(el){
-    el.classList.add("active");
-  }
-}
-
-function goHome(){ show("home"); }
-function openShop(){ show("shop"); renderShop(); }
-function openAdmin(){ show("adminLogin"); }
+let products = JSON.parse(localStorage.getItem("p")) || [];
+let isAdmin = false;
+let selectedProduct = null;
 
 /* LOGIN */
 function login(){
-  let code = document.getElementById("adminCode").value;
-
-  if(code === adminCode){
-    show("adminPanel");
-    renderAdmin();
+  let pass = document.getElementById("pass").value;
+  if(pass === "aaa2026"){
+    isAdmin = true;
+    show("shop");
+    render();
   } else {
-    alert("Wrong code");
+    alert("Wrong password");
   }
+}
+
+/* NAV */
+function show(id){
+  document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
 }
 
 /* ADD PRODUCT */
-function addProduct(){
+function add(){
   let name = document.getElementById("name").value;
   let price = document.getElementById("price").value;
-  let file = document.getElementById("image").files[0];
-
-  if(!name || !price || !file){
-    alert("Fill all fields");
-    return;
-  }
+  let cat = document.getElementById("cat").value;
+  let file = document.getElementById("img").files[0];
 
   let reader = new FileReader();
-
-  reader.onload = function(e){
-    products.push({
-      name:name,
-      price:price,
-      image:e.target.result
-    });
-
-    localStorage.setItem("products", JSON.stringify(products));
-
-    renderShop();
-    renderAdmin();
-  };
-
+  reader.onload = e=>{
+    products.push({name,price,cat,img:e.target.result});
+    localStorage.setItem("p", JSON.stringify(products));
+    render();
+  }
   reader.readAsDataURL(file);
 }
 
-/* SHOP */
-function renderShop(){
-  let box = document.getElementById("shopList");
-  if(!box) return;
-
-  box.innerHTML = "";
-
-  products.forEach(p=>{
-    box.innerHTML += `
-      <div class="card">
-        <img src="${p.image}">
-        <h3>${p.name}</h3>
-        <p class="price">${p.price} Birr</p>
-      </div>
-    `;
-  });
+/* DELETE */
+function del(i){
+  products.splice(i,1);
+  localStorage.setItem("p", JSON.stringify(products));
+  render();
 }
 
-/* ADMIN */
-function renderAdmin(){
-  let box = document.getElementById("adminList");
-  if(!box) return;
+/* SEARCH + CATEGORY */
+function render(){
+  let box = document.getElementById("list");
+  let search = document.getElementById("search")?.value || "";
+  let cat = document.getElementById("category")?.value || "all";
 
   box.innerHTML = "";
 
   products.forEach((p,i)=>{
-    box.innerHTML += `
+    if(
+      (cat==="all" || p.cat===cat) &&
+      p.name.toLowerCase().includes(search.toLowerCase())
+    ){
+      box.innerHTML += `
       <div class="card">
+        <img src="${p.img}">
         <h3>${p.name}</h3>
-        <p>${p.price}</p>
-        <button onclick="deleteProduct(${i})">Delete</button>
-      </div>
-    `;
-  });
-}
+        <p>${p.price} Birr</p>
 
-/* DELETE */
-function deleteProduct(i){
-  products.splice(i,1);
-  localStorage.setItem("products", JSON.stringify(products));
-  renderShop();
+        <button onclick="buy(${i})">Buy</button>
+
+        ${isAdmin ? `<button class="deleteBtn" onclick="del(${i})">Delete</button>` : ""}
+      </div>`;
+    }
+  });
+
   renderAdmin();
 }
 
-/* INIT */
-window.onload = function(){
-  show("home");
-  renderShop();
-};
+/* ADMIN LIST */
+function renderAdmin(){
+  let box = document.getElementById("adminList");
+  if(!box) return;
 
-/* SERVICE WORKER */
-if("serviceWorker" in navigator){
-  navigator.serviceWorker.register("sw.js")
-  .catch(err => console.log("SW error:", err));
+  box.innerHTML = products.map((p,i)=>`
+    <div class="card">
+      <h3>${p.name}</h3>
+      <button onclick="del(${i})">Delete</button>
+    </div>
+  `).join("");
 }
 
-/* PWA INSTALL */
-let deferredPrompt;
+/* BUY */
+function buy(i){
+  selectedProduct = products[i];
+  document.getElementById("orderInfo").innerText =
+    selectedProduct.name + " - " + selectedProduct.price + " Birr";
 
-window.addEventListener("beforeinstallprompt",(e)=>{
-  e.preventDefault();
-  deferredPrompt = e;
-  showInstall();
-});
-
-function showInstall(){
-  let btn = document.createElement("button");
-
-  btn.innerText = "📲 Install AAA SHOP";
-
-  Object.assign(btn.style,{
-    position:"fixed",
-    bottom:"80px",
-    right:"15px",
-    background:"#1e88e5",
-    color:"white",
-    border:"none",
-    padding:"12px",
-    borderRadius:"10px",
-    zIndex:"9999"
-  });
-
-  document.body.appendChild(btn);
-
-  btn.onclick = async function(){
-    btn.remove();
-
-    if(deferredPrompt){
-      deferredPrompt.prompt();
-      await deferredPrompt.userChoice;
-      deferredPrompt = null;
-    }
-  };
+  show("order");
 }
 
+/* BACK */
+function back(){
+  show("shop");
+}
+
+render();
 </script>
 
 </body>
