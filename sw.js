@@ -1,13 +1,13 @@
-const CACHE_NAME = "aaa-shop-v1";
+const CACHE_NAME = "aaashop-cache-v1";
 
 const urlsToCache = [
-  "/",
-  "/index.html",
-  "/logo.png",
-  "/manifest.json"
+  "index.html",
+  "about.html",
+  "contact.html",
+  "logo.png",
+  "manifest.json"
 ];
 
-// Install service worker
 self.addEventListener("install", event => {
   event.waitUntil(
     caches.open(CACHE_NAME).then(cache => {
@@ -16,7 +16,6 @@ self.addEventListener("install", event => {
   );
 });
 
-// Serve cached content
 self.addEventListener("fetch", event => {
   event.respondWith(
     caches.match(event.request).then(response => {
